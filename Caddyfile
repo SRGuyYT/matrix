@@ -1,0 +1,33 @@
+{
+  auto_https off
+  admin off
+}
+
+:80 {
+  encode zstd gzip
+
+  @wellknownClient path /.well-known/matrix/client
+  handle @wellknownClient {
+    header Content-Type application/json
+    header Access-Control-Allow-Origin *
+    respond 200 '{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}'
+  }
+
+  @wellknownServer path /.well-known/matrix/server
+  handle @wellknownServer {
+    header Content-Type application/json
+    respond 200 '{"m.server":"sky0cloud.dpdns.org:443"}'
+  }
+
+  handle_path /.well-known/matrix/* {
+    reverse_proxy continuwuity:8008
+  }
+
+  handle_path /_matrix/* {
+    reverse_proxy continuwuity:8008
+  }
+
+  handle {
+    reverse_proxy element-web:80
+  }
+}
