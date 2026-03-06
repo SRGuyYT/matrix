@@ -4,30 +4,34 @@
 }
 
 :80 {
-  encode zstd gzip
+    encode zstd gzip
 
-  @wellknownClient path /.well-known/matrix/client
-  handle @wellknownClient {
-    header Content-Type application/json
-    header Access-Control-Allow-Origin *
-    respond 200 '{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}'
-  }
+    # .well-known endpoints for Matrix clients
+    @wellknownClient path /.well-known/matrix/client
+    handle @wellknownClient {
+        header Content-Type application/json
+        header Access-Control-Allow-Origin *
+        respond 200 '{"m.homeserver":{"base_url":"http://sky0cloud.dpdns.org:80"}}'
+    }
 
-  @wellknownServer path /.well-known/matrix/server
-  handle @wellknownServer {
-    header Content-Type application/json
-    respond 200 '{"m.server":"sky0cloud.dpdns.org:443"}'
-  }
+    @wellknownServer path /.well-known/matrix/server
+    handle @wellknownServer {
+        header Content-Type application/json
+        respond 200 '{"m.server":"sky0cloud.dpdns.org:80"}'
+    }
 
-  handle_path /.well-known/matrix/* {
-    reverse_proxy continuwuity:6167
-  }
+    # All other .well-known requests go to Continuwuity
+    handle_path /.well-known/matrix/* {
+        reverse_proxy continuwuity:6167
+    }
 
-  handle_path /_matrix/* {
-    reverse_proxy continuwuity:6167
-  }
+    # Matrix client-server API
+    handle_path /_matrix/* {
+        reverse_proxy continuwuity:6167
+    }
 
-  handle {
-    reverse_proxy element-web:80
-  }
+    # Default (Element Web)
+    handle {
+        reverse_proxy element-web:80
+    }
 }
