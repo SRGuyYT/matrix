@@ -1,4 +1,0 @@
-ingress:
-  - hostname: sky0cloud.dpdns.org
-    service: http://caddy:80
-  - service: http_status:404
