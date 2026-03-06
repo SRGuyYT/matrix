@@ -41,7 +41,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:rw
+      - ./.well-known:/var/www/matrix/.well-known:rw
       - caddy_data:/data
       - caddy_config:/config
     healthcheck:
