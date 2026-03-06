@@ -1,0 +1,11 @@
+{
+  "default_server_config": {
+    "m.homeserver": {
+      "base_url": "https://sky0cloud.dpdns.org",
+      "server_name": "sky0cloud.dpdns.org"
+    }
+  },
+  "disable_custom_urls": true,
+  "disable_guests": false,
+  "brand": "Sky0Cloud"
+}
