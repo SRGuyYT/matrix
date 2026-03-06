@@ -6,7 +6,7 @@ services:
     environment:
       PORT: "6167"
     volumes:
-      - ./continuwuity/config.toml:/etc/continuwuity/continuwuity.toml
+      - ./continuwuity/continuwuity.toml:/etc/continuwuity.toml
       - ./continuwuity/data:/var/lib/continuwuity
       - ./data_backup:/var/lib/continuwuity_backup
     networks:
