@@ -6,8 +6,9 @@ services:
     environment:
       PORT: "6167"
     volumes:
-      - ./continuwuity/continuwuity.toml:/etc/continuwuity.toml
+      - ./continuwuity/conduwuit.toml:/etc/continuwuity.toml
       - ./continuwuity/data:/var/lib/continuwuity
+      - ./continuwuity/data_backup:/var/lib/continuwuity-backups
     networks:
       - sky0cloud-network
 
