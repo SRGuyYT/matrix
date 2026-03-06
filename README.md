@@ -36,45 +36,24 @@ Sky0Cloud/
 - `continuwuity` - Matrix homeserver (port `8008` internally).
 - `element-web` - Matrix web client.
 - `caddy` - HTTP-only reverse proxy and Matrix well-known endpoint handler.
-- `cloudflared` - Cloudflare Tunnel ingress connector.
 
 All services are attached to the internal Docker bridge network: `sky0cloud-network`.
 
 ## Prerequisites
 
 - Docker Engine + Docker Compose plugin installed.
-- Cloudflare account and Zero Trust Tunnel configured.
+- Cloudflare account/w domain and Zero Trust Tunnel configured.
 - Domain `sky0cloud.dpdns.org` delegated/managed in Cloudflare.
 
 ## 1) Cloudflare Tunnel setup
 
-### Option A: Tunnel token (recommended)
+### Option A: Tunnel
 
 1. In Cloudflare Zero Trust, create a tunnel.
 2. Add a public hostname:
    - `sky0cloud.dpdns.org` -> HTTP -> `caddy:80`
-3. Copy the tunnel token.
-4. Add it to `docker-compose.yml` for `cloudflared` by replacing command with:
-
-```yaml
-command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
-```
-
-5. Create `.env` next to `docker-compose.yml`:
-
-```env
-CLOUDFLARE_TUNNEL_TOKEN=your_token_here
-```
-
-### Option B: Named tunnel credentials file
-
-1. Place tunnel credentials JSON in `./cloudflared/`.
-2. Extend `cloudflared/config.yml` with:
-
-```yaml
-tunnel: <YOUR_TUNNEL_UUID>
-credentials-file: /etc/cloudflared/<YOUR_TUNNEL_UUID>.json
-```
+3. Copy the install command.
+4. Run it
 
 ## 2) Start the stack
 
