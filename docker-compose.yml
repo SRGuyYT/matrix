@@ -7,19 +7,25 @@ services:
       PORT: "6167"
     volumes:
       - ./continuwuity/conduwuit.toml:/etc/continuwuity.toml
-      - ./continuwuity/data:/var/lib/continuwuity
-      - ./continuwuity/data_backup:/var/lib/continuwuity-backups
+      - ./continuwuity/data:/data
+      - ./data_backup:/data_backup
     networks:
       - sky0cloud-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6167/_matrix/client/versions"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
 
   element-web:
     image: vectorim/element-web:latest
     container_name: sky0cloud-element-web
     restart: unless-stopped
     volumes:
-      - ./element/config.json:/app/config.json
-      - ./element/icon.png:/app/icon.png
-      - ./element/background.jpg:/app/background.jpg
+      - ./element/config.json:/app/config.json:ro
+      - ./element/icon.png:/app/icon.png:ro
+      - ./element/background.jpg:/app/background.jpg:ro
     depends_on:
       - continuwuity
     networks:
@@ -33,7 +39,7 @@ services:
       - continuwuity
       - element-web
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     healthcheck:
@@ -44,7 +50,7 @@ services:
       start_period: 15s
     networks:
       - sky0cloud-network
-      
+
 networks:
   sky0cloud-network:
     name: sky0cloud-network
