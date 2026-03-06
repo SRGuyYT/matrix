@@ -1,41 +1,58 @@
 [global]
 server_name = "sky0cloud.dpdns.org"
 database_path = "/data"
+database_backup_path = "/data_backup"
+database_backups_to_keep = 2
 new_user_displayname_suffix = ""
+allow_announcements_check = true
 
 # Registration
 allow_registration = true
 registration_token = "itoldyou"
-yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse = true
-
-# Auto Join Rooms
-# auto_join_rooms = [
-#    "!lKP6TkVFKVCOTpGQHV:sky0cloud.dpdns.org",
-#    "!sY6VaQPiY428XrWcWB:sky0cloud.dpdns.org"
-# ]
+allow_device_name_federation = true
+emergency_password = "Sky0CloudIsUnderFixxing!"
 
 # Networking
 address = ["0.0.0.0"]
 port = 6167
 grant_admin_to_first_user = true
 max_request_size = 524288000
+allow_legacy_media = true
+media_startup_check = true
+dual_protocol = true
 
 # Performance Tuning (Ryzen 3)
 db_pool_workers = 6
 db_pool_max_workers = 24
 rocksdb_optimize_for_spinning_disks = true
 rocksdb_compression_algo = "lz4"
+rocksdb_repair = true
 
+# Servers
 trusted_servers = ["matrix.org", "sky0cloud.dpdns.org"]
+# auto_join_rooms = [
+#    "!lKP6TkVFKVCOTpGQHV:sky0cloud.dpdns.org",
+#    "!sY6VaQPiY428XrWcWB:sky0cloud.dpdns.org"
+# ]
 query_trusted_key_servers_first = true
+query_trusted_key_servers_first_on_join = true
 log = "info"
+query_all_nameservers = true
+allow_encryption = true
+allow_unstable_room_versions = true
+allow_room_creation = true
+default_room_version = "11"
+startup_netburst = true
+#management_room =
 
-# Admin GUI
+# Admin Stuff
 [server]
 admin = true          # enables admin web interface
+admin_console_automatic = true
+admin_escape_commands = true
 auto_https = false    # keep HTTP only because of Cloudflare tunnel
 admin_bind_address = "0.0.0.0"
-admin_port = 6168     # separate port for admin GUI (optional, prevents conflicts)
+admin_port = 8000     # separate port for admin GUI (optional, prevents conflicts)
 
 # Email / SMTP
 [email]
@@ -46,3 +63,7 @@ smtp_pass = "TheBoss123?com"
 smtp_from = "Sky0Cloud <official@no-reply.skyservers.qzz.io>"
 require_transport_security = true
 require_verification = false
+support_page = "https://sky0cloud.dpdns.org/help"
+support_role = "m.role.admin"
+support_email = "official@no-reply.skyservers.qzz.io"
+support_mxid = "@admin:sky0cloud.dpdns.org"
