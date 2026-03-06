@@ -1,7 +1,7 @@
 [global]
 server_name = "sky0cloud.dpdns.org"
-database_path = "/data"
-database_backup_path = "/data_backup"
+database_path = "/var/lib/continuwuity"
+database_backup_path = "/var/lib/continuwuity_backup"
 database_backups_to_keep = 2
 new_user_displayname_suffix = ""
 allow_announcements_check = true
