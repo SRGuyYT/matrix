@@ -14,18 +14,15 @@ registration_token = "itoldyou"
 allow_device_name_federation = true
 
 # Globe Settines
-grant_admin_to_first_user = true
 max_request_size = 524288000
 allow_legacy_media = true
 media_startup_check = true
-dual_protocol = true
 
 # Performance Tuning (Ryzen 3)
-db_pool_workers = 6
-db_pool_max_workers = 24
+db_pool_workers = 24
 rocksdb_optimize_for_spinning_disks = true
 rocksdb_compression_algo = "lz4"
-rocksdb_repair = true
+rocksdb_repair = false
 
 # Servers
 trusted_servers = ["matrix.org", "sky0cloud.dpdns.org"]
