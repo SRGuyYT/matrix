@@ -7,10 +7,13 @@ services:
       PORT: "6167"
     volumes:
       - ./continuwuity/continuwuity.toml:/etc/continuwuity.toml
-      - ./continuwuity/data:/data
-      - ./data_backup:/data_backup
+      - ./continuwuity/data:/var/lib/continuwuity
+      - ./data_backup:/var/lib/continuwuity_backup
     networks:
       - sky0cloud-network
+    ports:
+      - "6167:6167"      # matrix client port
+      - "8000:8000"      # admin GUI port
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6167/_matrix/client/versions"]
       interval: 30s
