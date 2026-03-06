@@ -5,16 +5,18 @@ services:
     restart: unless-stopped
     environment:
       PORT: "6167"
+      CONDUWUIT_CONFIG: '/etc/conduwuit.toml'  # tells continuwuity where the config file is
     volumes:
-      - ./continuwuity/continuwuity.toml:/etc/continuwuity.toml
-      - ./continuwuity/data:/var/lib/continuwuity
-      - ./data_backup:/var/lib/continuwuity_backup
+      - /etc/resolv.conf:/etc/resolv.conf:ro  # this is required to avoid DNS performance issues
+      - ./continuwuity/continuwuity.toml:/etc/conduwuit.toml:rw
+      - ./continuwuity/data:/var/lib/conduwuit:rw
+      - ./data_backup:/var/lib/conduwuit_backup:rw
     networks:
       - sky0cloud-network
     ports:
       - "6167:6167"
       - "8000:8000"
-
+      
   element-web:
     image: vectorim/element-web:latest
     container_name: sky0cloud-element-web
