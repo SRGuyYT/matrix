@@ -20,11 +20,11 @@
   }
 
   handle_path /.well-known/matrix/* {
-    reverse_proxy continuwuity:8008
+    reverse_proxy continuwuity:6167
   }
 
   handle_path /_matrix/* {
-    reverse_proxy continuwuity:8008
+    reverse_proxy continuwuity:6167
   }
 
   handle {
