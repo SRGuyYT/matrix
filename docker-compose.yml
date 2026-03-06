@@ -6,10 +6,6 @@ services:
     container_name: sky0cloud-continuwuity
     restart: unless-stopped
     environment:
-      SERVER_NAME: sky0cloud.dpdns.org
-      ALLOW_REGISTRATION: "true"
-      ALLOW_FEDERATION: "true"
-      MAX_REQUEST_SIZE: "524288000"
       PORT: "8008"
     volumes:
       - ./continuwuity/data:/var/lib/continuwuity
@@ -46,26 +42,7 @@ services:
       start_period: 15s
     networks:
       - sky0cloud-network
-
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: sky0cloud-cloudflared
-    restart: unless-stopped
-    command: tunnel --config /etc/cloudflared/config.yml run
-    depends_on:
-      - caddy
-    volumes:
-      - ./cloudflared/config.yml:/etc/cloudflared/config.yml:ro
-      - ./cloudflared:/etc/cloudflared
-    healthcheck:
-      test: ["CMD", "cloudflared", "--version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
-    networks:
-      - sky0cloud-network
-
+      
 networks:
   sky0cloud-network:
     name: sky0cloud-network
