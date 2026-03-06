@@ -1,6 +1,6 @@
 {
-  auto_https off
-  admin off
+    email chapmlinks@gmail.com
+    auto_https off
 }
 
 :80 {
