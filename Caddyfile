@@ -6,23 +6,16 @@
 :80 {
     encode zstd gzip
 
-    # .well-known endpoints for Matrix clients
-    @wellknownClient path /.well-known/matrix/client
-    handle @wellknownClient {
-        header Content-Type application/json
-        header Access-Control-Allow-Origin *
-        respond 200 '{"m.homeserver":{"base_url":"http://sky0cloud.dpdns.org:80"}}'
+    # Set global headers for Matrix discovery
+    header /.well-known/matrix/* {
+        Content-Type "application/json; charset=utf-8"
+        Access-Control-Allow-Origin "*"
     }
 
-    @wellknownServer path /.well-known/matrix/server
-    handle @wellknownServer {
-        header Content-Type application/json
-        respond 200 '{"m.server":"sky0cloud.dpdns.org:80"}'
-    }
-
-    # All other .well-known requests go to Continuwuity
-    handle_path /.well-known/matrix/* {
-        reverse_proxy continuwuity:6167
+    # Serve the physical files you just pulled via git
+    handle /.well-known/matrix/* {
+        root * /var/www/matrix
+        file_server
     }
 
     # Matrix client-server API
@@ -34,4 +27,5 @@
     handle {
         reverse_proxy element-web:80
     }
+}
 }
