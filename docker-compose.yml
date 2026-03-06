@@ -4,7 +4,7 @@ services:
     container_name: sky0cloud-continuwuity
     restart: unless-stopped
     environment:
-      PORT: "8008"
+      PORT: "6167"
     volumes:
       - ./continuwuity/continuwuity.toml:/etc/continuwuity.toml
       - ./continuwuity/data:/var/lib/continuwuity
