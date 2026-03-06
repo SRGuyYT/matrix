@@ -12,7 +12,6 @@ allow_announcements_check = true
 allow_registration = true
 registration_token = "itoldyou"
 allow_device_name_federation = true
-emergency_password = "Sky0CloudIsUnderFixxing!"
 
 # Globe Settines
 grant_admin_to_first_user = true
