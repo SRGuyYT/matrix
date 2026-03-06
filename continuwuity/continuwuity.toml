@@ -1,7 +1,9 @@
 [global]
 server_name = "sky0cloud.dpdns.org"
-database_path = "/var/lib/continuwuity"
-database_backup_path = "/var/lib/continuwuity_backup"
+address = ["0.0.0.0"]
+port = 6167
+database_path = "/data"
+database_backup_path = "/data_backup"
 database_backups_to_keep = 2
 new_user_displayname_suffix = ""
 allow_announcements_check = true
@@ -12,9 +14,7 @@ registration_token = "itoldyou"
 allow_device_name_federation = true
 emergency_password = "Sky0CloudIsUnderFixxing!"
 
-# Networking
-address = ["0.0.0.0"]
-port = 6167
+# Globe Settines
 grant_admin_to_first_user = true
 max_request_size = 524288000
 allow_legacy_media = true
