@@ -27,7 +27,6 @@ database:
     keepalives_interval: 10
     keepalives_count: 3
 
-log_config: "/data/log.config"
 media_store_path: /data/media_store
 registration_shared_secret: "df34e89e6ea64244d63c7f31bd0c34a76fb22b64103075627543ba843b167e8a46b1e713edd33161860baa8c9fc4a86de9cac03c46561de07f77f20be9f7cf42"
 macaroon_secret_key: "23dc71ec52cc8e18dc0afbf1df20f0d53b471377321d4ae664afa511f3919a71de5466e6432a95d8e48d47b2be17099536fc6d83512a08b984746be3f1324c5b"
@@ -35,7 +34,7 @@ form_secret: "538aef9fc03da17410a71d57bca5c5383db6784db2b40a8d07b208f01bf2f2629a
 signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 
 trusted_key_servers:
-  - server_name: "matrix.org"
+  - server_name: "matrix.org", "sky0cloud.dpdns.org"
 
 # Cache tuning for 8GB RAM host.
 caches:
@@ -80,7 +79,4 @@ rc_message:
   per_second: 0.2
   burst_count: 10
 
-report_stats: false
-
-loggers:
-  synapse.storage.SQL: warning
+report_stats: true
