@@ -93,23 +93,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: sky0cloud-cloudflared
-    restart: unless-stopped
-    command: tunnel --config /etc/cloudflared/config.yml run
-    depends_on:
-      - caddy
-    volumes:
-      - ./cloudflared:/etc/cloudflared:ro
-    networks:
-      - sky0cloud-network
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   sky0cloud-network:
     name: sky0cloud-network
