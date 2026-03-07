@@ -1,10 +1,9 @@
-## --- CORE SERVER SETTINGS --- ##
 server_name: "sky0cloud.dpdns.org"
 public_baseurl: "https://sky0cloud.dpdns.org/"
 pid_file: /data/homeserver.pid
 signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 report_stats: true
-suppress_key_server_warning: true # Cleans up your startup logs
+suppress_key_server_warning: true 
 
 ## --- LISTENERS & TRUSTED PROXIES --- ##
 listeners:
@@ -16,18 +15,20 @@ listeners:
     resources:
       - names: [client, federation]
         compress: false
-# Add this to your homeserver.yaml
-allow_public_rooms_over_federation: true
 
-# This is the critical part for Synapse Admin
+# --- ROOM DIRECTORY & PUBLISHING --- #
+allow_public_rooms_over_federation: true
+allow_public_rooms_without_auth: true
+
+# --- UNIVERSAL CORS (CROSS-TALK) --- #
+# This allows Admin UI, Element, and custom scripts to connect
 cors_allow_origin:
-  - "https://matrix.sky0cloud.dpdns.org"
-  - "https://sky0cloud.dpdns.org"
+  - "*"
 
 trusted_proxies:
   - "127.0.0.1"
-  - "172.16.0.0/12" # Trust Docker Bridge
-  - "10.0.0.0/8"    # Trust Cloudflare Tunnel ranges
+  - "172.16.0.0/12" 
+  - "10.0.0.0/8"    
 
 ## --- DATABASE (POSTGRES) --- ##
 database:
@@ -46,10 +47,6 @@ enable_registration: true
 registration_requires_token: true 
 registration_shared_secret: "itoldyou"
 allow_guest_access: false
-
-# REMOVED: registration_tokens: [] 
-# Logic: If you define an empty list here, it can sometimes override 
-# the tokens you create in the Admin UI database. Leaving it out is safer.
 
 ## --- EMAIL (MAILGUN) --- ##
 email:
