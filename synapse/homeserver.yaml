@@ -39,7 +39,7 @@ trusted_key_servers:
 caches:
   global_factor: 0.5
 
-max_upload_size: "0"
+max_upload_size: "95M"
 allow_guest_access: false
 
 # --- REGISTRATION SETTINGS ---
