@@ -17,7 +17,7 @@ database:
   name: psycopg2
   args:
     user: synapse_user
-    password: sky0Cloud!
+    password: Sky@Cloud0Tho
     dbname: synapse
     host: sky0cloud-postgres
     port: 5432
