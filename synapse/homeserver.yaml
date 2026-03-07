@@ -1,0 +1,90 @@
+## --- CORE SERVER SETTINGS --- ##
+server_name: "sky0cloud.dpdns.org"
+public_baseurl: "https://sky0cloud.dpdns.org/"
+pid_file: /data/homeserver.pid
+signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
+report_stats: true
+
+## --- LISTENERS & CLOUDFLARE TUNNEL TRUST --- ##
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true # Essential for Cloudflare Tunnels
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [client, federation]
+        compress: false
+
+# This block fixes the 400 Bad Request / No Validated Session errors
+trusted_proxies:
+  - "127.0.0.1"
+  - "172.16.0.0/12" # Trust Docker Bridge
+  - "10.0.0.0/8"    # Trust Cloudflare Tunnel ranges
+
+## --- DATABASE (POSTGRES OPTIMIZED) --- ##
+database:
+  name: psycopg2
+  args:
+    user: synapse_user
+    password: "Sky@Cloud0Tho"
+    dbname: synapse
+    host: sky0cloud-postgres
+    port: 5432
+    cp_min: 5
+    cp_max: 15 # Increased for better peak performance
+    keepalives_idle: 10
+    keepalives_interval: 10
+    keepalives_count: 3
+
+## --- REGISTRATION & TOKENS --- ##
+enable_registration: true
+registration_requires_token: true # Forces everyone to use a token
+registration_shared_secret: "itoldyou"
+allow_guest_access: false
+
+# Note: Individual tokens like 'itoldyou' are usually managed via 
+# the Admin API, not hardcoded here. But this enables the feature:
+registration_tokens: [] 
+
+## --- EMAIL (MAILGUN & 3PID) --- ##
+email:
+  enable_notifs: true
+  smtp_host: "smtp.mailgun.org"
+  smtp_port: 587
+  smtp_user: "official@no-reply.skyservers.qzz.io"
+  smtp_pass: "TheBoss123?com"
+  require_transport_security: true
+  notif_from: "Sky0Cloud Matrix <official@no-reply.skyservers.qzz.io>"
+  app_name: "Sky0Cloud Matrix"
+  client_base_url: "https://sky0cloud.dpdns.org"
+  invite_client_location: "https://sky0cloud.dpdns.org"
+  validation_token_lifetime: 1h
+
+# Crucial: This tells Synapse to trust its own email verification
+account_threepid:
+  email:
+    client_can_lookup: true
+    address_is_trusted: true
+
+## --- MEDIA & CACHING --- ##
+media_store_path: /data/media_store
+max_upload_size: "100M" # Rounded up to 100MB
+caches:
+  global_factor: 1.2 # Increased from 0.5 for much faster room switching
+
+## --- ROOM DIRECTORY --- ##
+# This allows your users to actually publish rooms to your directory
+room_list_publication_rules:
+  - user_id: "@*:sky0cloud.dpdns.org"
+    alias: "*"
+    room_id: "*"
+    action: allow
+
+## --- SECURITY SECRETS --- ##
+macaroon_secret_key: "23dc71ec52cc8e18dc0afbf1df20f0d53b471377321d4ae664afa511f3919a71de5466e6432a95d8e48d47b2be17099536fc6d83512a08b984746be3f1324c5b"
+form_secret: "538aef9fc03da17410a71d57bca5c5383db6784db2b40a8d07b208f01bf2f2629abcbe68d424a976c5664fc66ceef4e4a76440ff13c77822c814489f19621bfd"
+
+## --- FEDERATION --- ##
+trusted_key_servers:
+  - server_name: "matrix.org"
