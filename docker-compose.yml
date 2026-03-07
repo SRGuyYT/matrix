@@ -3,10 +3,11 @@ services:
     image: postgres:16-alpine
     container_name: sky0cloud-postgres
     restart: unless-stopped
+    shm_size: '256mb' # Optimization: Give Postgres more shared memory for Matrix queries
     environment:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
-      POSTGRES_PASSWORD: Sky@Cloud0Tho
+      POSTGRES_PASSWORD: "Sky@Cloud0Tho" # Keep your password secure
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
@@ -14,9 +15,9 @@ services:
       - sky0cloud-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse"]
-      interval: 10s
+      interval: 5s # Faster healthchecks for quicker startups
       timeout: 5s
-      retries: 10
+      retries: 5
 
   synapse:
     image: matrixdotorg/synapse:latest
@@ -27,9 +28,11 @@ services:
         condition: service_healthy
     environment:
       SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      # Optimization: Ensure Python handles UTF-8 correctly
+      PYTHONIOENCODING: utf-8
     volumes:
       - ./synapse/data:/data
-      - ./synapse/homeserver.yaml:/data/homeserver.yaml
+      - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro # Mount as Read-Only to prevent accidental overwrites
     networks:
       - sky0cloud-network
     expose:
@@ -42,13 +45,11 @@ services:
     depends_on:
       - synapse
     volumes:
-      - ./element/config.json:/app/config.json
-      - ./element/icon.png:/app/icon.png
-      - ./element/background.jpg:/app/background.jpg
+      - ./element/config.json:/app/config.json:ro
+      - ./element/icon.png:/app/icon.png:ro
+      - ./element/background.jpg:/app/background.jpg:ro
     networks:
       - sky0cloud-network
-    expose:
-      - "80"
 
   synapse-admin:
     image: awesometechnologies/synapse-admin:latest
@@ -57,32 +58,31 @@ services:
     depends_on:
       - synapse
     environment:
-      REACT_APP_SERVER: https://sky0cloud.dpdns.org
+      - REACT_APP_SERVER=https://sky0cloud.dpdns.org
     networks:
       - sky0cloud-network
-    expose:
-      - "80"
 
   caddy:
     image: caddy:2-alpine
     container_name: sky0cloud-caddy
     restart: unless-stopped
-    depends_on:
-      - synapse
-      - element-web
-      - synapse-admin
+    # If using Cloudflare Tunnel, port 443 is often handled by the tunnel.
+    # We keep 80 open for the tunnel's local traffic.
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     networks:
       - sky0cloud-network
+    depends_on:
+      - synapse
+      - element-web
 
 networks:
   sky0cloud-network:
+    name: matrix_network # Naming the network makes it easier for Cloudflare Tunnel to find
     driver: bridge
 
 volumes:
