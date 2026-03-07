@@ -42,7 +42,7 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:rw
-      - ./.well-known:/var/www/matrix/.well-known:rw
+      - ./.well-known:/var/www/matrix/.well-known:ro
       - caddy_data:/data
       - caddy_config:/config
     healthcheck:
