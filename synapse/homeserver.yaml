@@ -36,7 +36,7 @@ trusted_key_servers:
   - server_name: "matrix.org"
   - server_name: "sky0cloud.dpdns.org"
 
-# Cache tuning for 8GB RAM host.
+# Cache tuning for 8GB RAM host
 caches:
   global_factor: 0.5
 
@@ -44,17 +44,16 @@ max_upload_size: "0"
 
 allow_guest_access: false
 
-# --- REGISTRATION LOCK SETTINGS ---
+# --- REGISTRATION SETTINGS ---
 enable_registration: true
 registration_requires_token: true
-registration_shared_secret: "itoldyou"
 enable_registration_without_verification: true
 
 registration_tokens:
-  "itoldyou_admin":  # this is the token you pass
-    admin: true  # true if this user should be an admin
-  "itoldyou":  # this is the token you pass
-    admin: false  # true if this user should be an admin
+  itoldyou_admin:
+    admin: true
+  itoldyou:
+    admin: false
 # ----------------------------------
 
 enable_3pid_changes: true
