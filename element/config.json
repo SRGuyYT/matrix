@@ -23,5 +23,5 @@
     "welcome_background_url": "/background.jpg",
     "auth_header_logo_url": "/icon.png"
   },
-  "show_labs_settings": false
+  "show_labs_settings": true
 }
