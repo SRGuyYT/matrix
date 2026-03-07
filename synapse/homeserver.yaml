@@ -12,76 +12,73 @@ listeners:
       - names: [client, federation]
         compress: false
 
+# PostgreSQL backend (recommended for production performance).
 database:
-  name: sqlite3
+  name: psycopg2
   args:
-    database: /data/homeserver.db
+    user: synapse_user
+    password: sky0Cloud!
+    dbname: synapse
+    host: sky0cloud-postgres
+    port: 5432
+    cp_min: 5
+    cp_max: 10
+    keepalives_idle: 10
+    keepalives_interval: 10
+    keepalives_count: 3
 
 log_config: "/data/log.config"
-
 media_store_path: /data/media_store
-
-registration_shared_secret: "c685c852a8e88fe12f04e18a4f476db3f5b7a47f88b981e1570283de3aad533e204d936ae5d0da98781b8715734f3cb67068fd2e53ba23f6208ffb94e8875334"
-macaroon_secret_key: "72600979f1ea905f5ffca1084f1850f4773b9596e94606543687e528e3e1d61fd2a6927450fed6b7712ce692744beeacecce644a780baf06ac6a7784a16f5cd6"
-form_secret: "33ad0c9ba96177424c632b168681609f96d5302e1f0d976d000b312105024622d4f0ffc85e14ecf4b38f643528700ab2406aebaf07d416cd0b1cb857d6d87967"
-
+registration_shared_secret: "CHANGE_ME_REGISTRATION_SHARED_SECRET"
+macaroon_secret_key: "CHANGE_ME_MACAROON_SECRET"
+form_secret: "CHANGE_ME_FORM_SECRET"
 signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 
 trusted_key_servers:
   - server_name: "matrix.org"
-  - server_name: "sky0cloud.dpdns.org"
 
-trusted_proxies:
-  - 172.16.0.0/12
-  - 10.0.0.0/8
-  - 192.168.0.0/16
-
+# Cache tuning for 8GB RAM host.
 caches:
   global_factor: 0.5
 
-max_upload_size: "250M"
+max_upload_size: "50M"
 
 allow_guest_access: false
-
 enable_registration: true
-registration_requires_token: true
 enable_registration_without_verification: false
 enable_3pid_changes: true
 
-password_config:
-  enabled: true
-
-url_preview_enabled: true
-
-url_preview_ip_range_blacklist:
-  - "127.0.0.0/8"
-  - "::1/128"
-  - "10.0.0.0/8"
-  - "172.16.0.0/12"
-  - "192.168.0.0/16"
-  - "100.64.0.0/10"
-  - "169.254.0.0/16"
-
+# Mailgun SMTP + links used for validation/password reset emails.
 email:
   smtp_host: "smtp.mailgun.org"
   smtp_port: 587
   smtp_user: "official@no-reply.skyservers.qzz.io"
-  smtp_pass: "TheBoss123?com"
+  smtp_pass: "CHANGE_ME_SMTP_PASSWORD"
   require_transport_security: true
-
   notif_from: "Sky0Cloud Matrix <official@no-reply.skyservers.qzz.io>"
-  app_name: "Sky0Cloud Server"
+  app_name: "Sky0Cloud Matrix"
+  client_base_url: "https://sky0cloud.dpdns.org"
+  invite_client_location: "https://sky0cloud.dpdns.org"
+  validation_token_lifetime: 1h
+
+# Keep token endpoints enabled in Synapse.
+account_threepid_delegates: {}
+
+password_config:
+  enabled: true
+
+# Fixes '[403] Not allowed to publish room' for local users.
+room_list_publication_rules:
+  - user_id: "@*:sky0cloud.dpdns.org"
+    action: allow
+  - action: deny
 
 rc_message:
   per_second: 0.2
   burst_count: 10
 
-rc_login:
-  address:
-    per_second: 0.17
-    burst_count: 3
-
 report_stats: false
 
+# Lower-volume logging to reduce disk writes.
 loggers:
   synapse.storage.SQL: warning

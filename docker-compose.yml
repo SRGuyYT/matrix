@@ -1,4 +1,29 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sky0cloud-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: synapse
+      POSTGRES_USER: synapse_user
+      POSTGRES_PASSWORD: CHANGE_ME_DB_PASSWORD
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    networks:
+      - sky0cloud-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   synapse:
     image: matrixdotorg/synapse:latest
     container_name: sky0cloud-synapse
@@ -8,13 +33,16 @@ services:
       UID: "991"
       GID: "991"
     volumes:
-      - ./synapse/data:/data:rw
-      - ./synapse/homeserver.yaml:/data/homeserver.yaml:rw
-      - ./synapse/log.config:/data/log.config:rw
+      - ./synapse/data:/data
+      - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro
+      - ./synapse/log.config:/data/log.config:ro
     networks:
       - sky0cloud-network
     expose:
       - "8008"
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8008/_matrix/client/versions"]
       interval: 30s
@@ -31,6 +59,10 @@ services:
     image: awesometechnologies/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
     restart: unless-stopped
+    environment:
+      SYNAPSE_ADMIN_API_BASE_URL: "https://sky0cloud.dpdns.org"
+      REACT_APP_SERVER: "https://sky0cloud.dpdns.org"
+      REACT_APP_SERVER_NAME: "sky0cloud.dpdns.org"
     expose:
       - "80"
     ports:
@@ -77,7 +109,7 @@ services:
       - "80:80"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./.well-known:/var/www/matrix/.well-known:ro
+      - caddy_data:/data
       - caddy_config:/config
     networks:
       - sky0cloud-network
