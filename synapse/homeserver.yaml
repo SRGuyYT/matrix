@@ -18,47 +18,60 @@ database:
     database: /data/homeserver.db
 
 log_config: "/data/log.config"
+
 media_store_path: /data/media_store
-registration_shared_secret: "CHANGE_ME_REGISTRATION_SHARED_SECRET"
-macaroon_secret_key: "CHANGE_ME_MACAROON_SECRET"
-form_secret: "CHANGE_ME_FORM_SECRET"
+
+registration_shared_secret: "7b65809faab04c23eab40f15af72de75ed7f089b7d429ec9c7167790a92bebfd2a1dd24e3d05a4e5ac7eff17bd18741f43a077c5b152e9b661cfd91ea4a255cc"
+macaroon_secret_key: "72600979f1ea905f5ffca1084f1850f4773b9596e94606543687e528e3e1d61fd2a6927450fed6b7712ce692744beeacecce644a780baf06ac6a7784a16f5cd6"
+form_secret: "33ad0c9ba96177424c632b168681609f96d5302e1f0d976d000b312105024622d4f0ffc85e14ecf4b38f643528700ab2406aebaf07d416cd0b1cb857d6d87967"
+
 signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 
 trusted_key_servers:
   - server_name: "matrix.org"
+  - server_name: "sky0cloud.dpdns.org"
 
-# HDD-friendly limits and cache sizes for 8 GB RAM hosts.
+trusted_proxies:
+  - 172.16.0.0/12
+  - 10.0.0.0/8
+  - 192.168.0.0/16
+
 caches:
   global_factor: 0.5
 
-max_upload_size: "50M"
+max_upload_size: "250M"
 
 allow_guest_access: false
+
 enable_registration: true
 enable_registration_without_verification: false
+enable_3pid_changes: true
 
-# Required for password reset and 3PID email flows.
+password_config:
+  enabled: true
+
+url_preview_enabled: true
+
 email:
   smtp_host: "smtp.mailgun.org"
   smtp_port: 587
   smtp_user: "official@no-reply.skyservers.qzz.io"
-  smtp_pass: "CHANGE_ME_SMTP_PASSWORD"
+  smtp_pass: "TheBoss123?com"
   require_transport_security: true
+
   notif_from: "Sky0Cloud Matrix <official@no-reply.skyservers.qzz.io>"
-  app_name: "Sky0Cloud Matrix"
-
-# Enables /_matrix/client/v3/account/password/email/requestToken
-account_threepid_delegates: {}
-
-password_config:
-  enabled: true
+  app_name: "Sky0Cloud Server"
 
 rc_message:
   per_second: 0.2
   burst_count: 10
 
+rc_login:
+  address:
+    per_second: 0.17
+    burst_count: 3
+
 report_stats: false
 
-# Lower-volume logging to reduce disk writes.
 loggers:
   synapse.storage.SQL: warning
