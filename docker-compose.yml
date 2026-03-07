@@ -1,5 +1,5 @@
 services:
-  postgres:
+postgres:
     image: postgres:16-alpine
     container_name: sky0cloud-postgres
     restart: unless-stopped
@@ -7,6 +7,7 @@ services:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: Sky@Cloud0Tho
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
@@ -18,11 +19,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   synapse:
     image: matrixdotorg/synapse:latest
