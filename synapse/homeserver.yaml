@@ -49,6 +49,12 @@ enable_registration: true
 registration_requires_token: true
 registration_shared_secret: "itoldyou"
 enable_registration_without_verification: true
+
+registration_tokens:
+  "itoldyou_admin":  # this is the token you pass
+    admin: true  # true if this user should be an admin
+  "itoldyou":  # this is the token you pass
+    admin: false  # true if this user should be an admin
 # ----------------------------------
 
 enable_3pid_changes: true
