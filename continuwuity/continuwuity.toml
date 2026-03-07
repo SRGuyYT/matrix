@@ -46,7 +46,6 @@ startup_netburst = true
 admin = true          # enables admin web interface
 admin_console_automatic = true
 admin_escape_commands = true
-auto_https = false    # keep HTTP only because of Cloudflare tunnel
 admin_bind_address = "0.0.0.0"
 admin_port = 8000     # separate port for admin GUI (optional, prevents conflicts)
 
