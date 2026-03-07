@@ -7,7 +7,6 @@ services:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: Sky@Cloud0Tho
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
@@ -18,61 +17,47 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 20s
 
   synapse:
     image: matrixdotorg/synapse:latest
     container_name: sky0cloud-synapse
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-      UID: "991"
-      GID: "991"
     volumes:
-      - ./synapse/data:/data:rw
-      - ./synapse/homeserver.yaml:/data/homeserver.yaml:rw
-      - ./synapse/log.config:/data/log.config:rw
+      - ./synapse/data:/data
+      - ./synapse/homeserver.yaml:/data/homeserver.yaml
     networks:
       - sky0cloud-network
     expose:
       - "8008"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8008/_matrix/client/versions"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-
-  synapse-admin:
-    image: awesometechnologies/synapse-admin:latest
-    container_name: sky0cloud-synapse-admin
-    restart: unless-stopped
-    environment:
-      SYNAPSE_ADMIN_API_BASE_URL: "https://sky0cloud.dpdns.org"
-      REACT_APP_SERVER: "https://sky0cloud.dpdns.org"
-      REACT_APP_SERVER_NAME: "sky0cloud.dpdns.org"
-    expose:
-      - "80"
-    ports:
-      - "8000:80"
-    depends_on:
-      - synapse
-    networks:
-      - sky0cloud-network
 
   element-web:
     image: vectorim/element-web:latest
     container_name: sky0cloud-element-web
     restart: unless-stopped
-    volumes:
-      - ./element/config.json:/app/config.json:rw
-      - ./element/icon.png:/app/icon.png:ro
-      - ./element/background.jpg:/app/background.jpg:ro
     depends_on:
       - synapse
+    volumes:
+      - ./element/config.json:/app/config.json
+      - ./element/icon.png:/app/icon.png
+      - ./element/background.jpg:/app/background.jpg
+    networks:
+      - sky0cloud-network
+    expose:
+      - "80"
+
+  synapse-admin:
+    image: awesometechnologies/synapse-admin:latest
+    container_name: sky0cloud-synapse-admin
+    restart: unless-stopped
+    depends_on:
+      - synapse
+    environment:
+      REACT_APP_SERVER: https://sky0cloud.dpdns.org
     networks:
       - sky0cloud-network
     expose:
@@ -90,7 +75,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
     networks:
@@ -98,9 +83,8 @@ services:
 
 networks:
   sky0cloud-network:
-    name: sky0cloud-network
     driver: bridge
 
 volumes:
-  caddy_config:
   caddy_data:
+  caddy_config:
