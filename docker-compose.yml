@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
-      POSTGRES_PASSWORD: CHANGE_ME_DB_PASSWORD
+      POSTGRES_PASSWORD: Sky@Cloud0Tho
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
@@ -33,9 +33,9 @@ services:
       UID: "991"
       GID: "991"
     volumes:
-      - ./synapse/data:/data
-      - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro
-      - ./synapse/log.config:/data/log.config:ro
+      - ./synapse/data:/data:rw
+      - ./synapse/homeserver.yaml:/data/homeserver.yaml:rw
+      - ./synapse/log.config:/data/log.config:rw
     networks:
       - sky0cloud-network
     expose:
@@ -82,7 +82,7 @@ services:
     container_name: sky0cloud-element-web
     restart: unless-stopped
     volumes:
-      - ./element/config.json:/app/config.json:ro
+      - ./element/config.json:/app/config.json:rw
       - ./element/icon.png:/app/icon.png:ro
       - ./element/background.jpg:/app/background.jpg:ro
     depends_on:
