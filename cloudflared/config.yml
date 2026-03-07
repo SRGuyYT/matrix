@@ -4,6 +4,8 @@ credentials-file: /etc/cloudflared/eyJhIjoiMTk5MDdjNDM5NmRkNTc0MTAxMjY2ODE4YTg5O
 ingress:
   - hostname: sky0cloud.dpdns.org
     service: http://caddy:80
+
   - hostname: matrix.sky0cloud.dpdns.org
     service: http://caddy:80
+
   - service: http_status:404
