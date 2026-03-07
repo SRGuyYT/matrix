@@ -16,6 +16,13 @@ listeners:
     resources:
       - names: [client, federation]
         compress: false
+# Add this to your homeserver.yaml
+allow_public_rooms_over_federation: true
+
+# This is the critical part for Synapse Admin
+cors_allow_origin:
+  - "https://matrix.sky0cloud.dpdns.org"
+  - "https://sky0cloud.dpdns.org"
 
 trusted_proxies:
   - "127.0.0.1"
