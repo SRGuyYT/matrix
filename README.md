@@ -1,6 +1,6 @@
 ---
 
-# 🚀 Sky0Cloud Matrix/Synapse "God-Mode" Deployment Guide
+# 🚀 Sky0Cloud Matrix/Synapse Deployment Guide
 
 This guide overhauls the deployment for `sky0cloud.dpdns.org`. It is optimized for **Cloudflare Tunnels**, fixes **CORS loops**, and ensures **PostgreSQL** stability.
 
