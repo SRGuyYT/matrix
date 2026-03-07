@@ -1,50 +1,4 @@
 services:
-  synapse:
-    image: matrixdotorg/synapse:latest
-    container_name: sky0cloud-synapse
-    restart: unless-stopped
-    environment:
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-      UID: "991"
-      GID: "991"
-    volumes:
-      - ./synapse/data:/data:rw
-      - ./synapse/homeserver.yaml:/data/homeserver.yaml:rw
-      - ./synapse/log.config:/data/log.config:rw
-    networks:
-      - sky0cloud-network
-    expose:
-      - "8008"
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8008/_matrix/client/versions"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  synapse-admin:
-    image: awesometechnologies/synapse-admin:latest
-    container_name: sky0cloud-synapse-admin
-    restart: unless-stopped
-    expose:
-      - "80"
-    ports:
-      - "8000:80"
-    depends_on:
-      - synapse
-    networks:
-      - sky0cloud-network
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-
   element-web:
     image: vectorim/element-web:latest
     container_name: sky0cloud-element-web
@@ -70,9 +24,7 @@ services:
     container_name: sky0cloud-caddy
     restart: unless-stopped
     depends_on:
-      - synapse
       - element-web
-      - synapse-admin
     ports:
       - "80:80"
     volumes:
