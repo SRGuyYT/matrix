@@ -5,22 +5,24 @@ services:
     restart: unless-stopped
     environment:
       PORT: "6167"
-      CONDUWUIT_CONFIG: '/etc/conduwuit.toml'  # tells continuwuity where the config file is
+      CONDUWUIT_CONFIG: '/etc/conduwuit.toml'
     volumes:
-      - /etc/resolv.conf:/etc/resolv.conf:ro  # this is required to avoid DNS performance issues
+      - /etc/resolv.conf:/etc/resolv.conf:ro
       - ./continuwuity/continuwuity.toml:/etc/conduwuit.toml:rw
       - ./continuwuity/data:/var/lib/conduwuit:rw
       - ./data_backup:/var/lib/conduwuit_backup:rw
     networks:
       - sky0cloud-network
-    ports:
-      - "6167:6167"
-      - "8000:8000"
-      
+    expose:
+      - "6167"
+      - "8000"
+
   element-web:
     image: vectorim/element-web:latest
     container_name: sky0cloud-element-web
     restart: unless-stopped
+    environment:
+      - BASE_URL=https://sky0cloud.dpdns.org
     volumes:
       - ./element/config.json:/app/config.json:ro
       - ./element/icon.png:/app/icon.png:ro
@@ -29,6 +31,8 @@ services:
       - continuwuity
     networks:
       - sky0cloud-network
+    expose:
+      - "80"
 
   caddy:
     image: caddy:2-alpine
@@ -42,17 +46,17 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:rw
-      - ./.well-known:/var/www/matrix/.well-known:ro
       - caddy_data:/data
       - caddy_config:/config
+      - ./.well-known:/var/www/matrix/.well-known:ro
+    networks:
+      - sky0cloud-network
     healthcheck:
       test: ["CMD", "caddy", "version"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 15s
-    networks:
-      - sky0cloud-network
 
 networks:
   sky0cloud-network:
