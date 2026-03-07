@@ -34,7 +34,9 @@ form_secret: "538aef9fc03da17410a71d57bca5c5383db6784db2b40a8d07b208f01bf2f2629a
 signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 
 trusted_key_servers:
-  - server_name: "matrix.org", "sky0cloud.dpdns.org"
+  - server_name:
+      - "matrix.org"
+      - "sky0cloud.dpdns.org"
 
 # Cache tuning for 8GB RAM host.
 caches:
