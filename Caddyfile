@@ -5,51 +5,48 @@
 
 # Synapse Admin UI
 matrix.sky0cloud.dpdns.org:80 {
-    header Access-Control-Allow-Origin "*"
-    header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
     reverse_proxy sky0cloud-synapse-admin:8080
 }
 
 # Main Site: Matrix + Element Web
 sky0cloud.dpdns.org:80 {
-    # 1. Matrix Discovery
+    # 1. Broad CORS policy for the entire domain
+    header {
+        Access-Control-Allow-Origin *
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Matrix-User-ID"
+        Access-Control-Expose-Headers "Content-Length, X-Matrix-User-ID"
+    }
+
+    # 2. Matrix Discovery (.well-known)
+    # Using 'handle' to ensure these take priority
     handle /.well-known/matrix/client {
         header Content-Type application/json
-        header Access-Control-Allow-Origin *
         respond `{"m.homeserver": {"base_url": "https://sky0cloud.dpdns.org"}}` 200
     }
 
     handle /.well-known/matrix/server {
         header Content-Type application/json
-        header Access-Control-Allow-Origin *
         respond `{"m.server":"sky0cloud.dpdns.org"}` 200
     }
 
-    # 2. Matrix API + Admin API
+    # 3. Matrix API + Admin API + Media
+    # Added /_synapse/admin/ for the Synapse Admin UI to work correctly
     @synapse_paths path /_matrix/* /_synapse/* /_admin/*
     handle @synapse_paths {
-        # Global CORS Preflight Handling
+        # Handle OPTIONS (preflight) directly at the proxy level
         @cors_preflight method OPTIONS
-        handle @cors_preflight {
-            header Access-Control-Allow-Origin "*"
-            header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-            header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-            respond "" 204
-        }
-
+        reverse_proxy @cors_preflight http://sky0cloud-synapse:8008
+        
+        # Standard Proxy
         reverse_proxy http://sky0cloud-synapse:8008 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
             header_up X-Forwarded-For {header.Cf-Connecting-Ip}
-            
-            # Force headers on the way back to the client
-            header_down -Access-Control-Allow-Origin
-            header_down Access-Control-Allow-Origin "*"
-            header_down Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-            header_down Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
         }
     }
 
-    # 3. Element Web Client
+    # 4. Element Web Client (Fallback for all other paths)
     handle {
         reverse_proxy http://sky0cloud-element-web:80
     }
