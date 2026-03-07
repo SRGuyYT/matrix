@@ -19,7 +19,6 @@ sky0cloud.dpdns.org:80 {
     }
 
     # 2. Matrix Discovery (.well-known)
-    # Using 'handle' to ensure these take priority
     handle /.well-known/matrix/client {
         header Content-Type application/json
         respond `{"m.homeserver": {"base_url": "https://sky0cloud.dpdns.org"}}` 200
@@ -31,18 +30,17 @@ sky0cloud.dpdns.org:80 {
     }
 
     # 3. Matrix API + Admin API + Media
-    # Added /_synapse/admin/ for the Synapse Admin UI to work correctly
     @synapse_paths path /_matrix/* /_synapse/* /_admin/*
     handle @synapse_paths {
-        # Handle OPTIONS (preflight) directly at the proxy level
-        @cors_preflight method OPTIONS
-        reverse_proxy @cors_preflight http://sky0cloud-synapse:8008
-        
-        # Standard Proxy
         reverse_proxy http://sky0cloud-synapse:8008 {
             header_up Host {host}
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-For {header.Cf-Connecting-Ip}
+
+            # FIX: Strip any CORS headers sent by Synapse to prevent "*, *" duplicates
+            header_down -Access-Control-Allow-Origin
+            header_down -Access-Control-Allow-Methods
+            header_down -Access-Control-Allow-Headers
         }
     }
 
