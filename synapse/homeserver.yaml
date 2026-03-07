@@ -40,7 +40,7 @@
 # See https://matrix-org.github.io/synapse/latest/modules/index.html for more
 # documentation on how to configure or create custom modules for Synapse.
 #
-modules:
+# modules:
   #- module: my_super_module.MySuperClass
   #  config:
   #    do_thing: true
@@ -68,11 +68,11 @@ modules:
 # lowercase and may contain an explicit port.
 # Examples: matrix.org, localhost:8080
 #
-server_name: "SERVERNAME"
+server_name: "sky0cloud.dpdns.org"
 
 # When running as a daemon, the file to store the pid in
 #
-pid_file: DATADIR/homeserver.pid
+pid_file: /data/homeserver.pid
 
 # The absolute URL to the web client which / will redirect to.
 #
@@ -87,7 +87,7 @@ pid_file: DATADIR/homeserver.pid
 #
 # Defaults to 'https://<server_name>/'.
 #
-#public_baseurl: https://example.com/
+public_baseurl: "https://sky0cloud.dpdns.org/"
 
 # Uncomment the following to tell other servers to send federation traffic on
 # port 443.
@@ -105,7 +105,7 @@ pid_file: DATADIR/homeserver.pid
 #
 # Defaults to 'false'.
 #
-#serve_server_wellknown: true
+serve_server_wellknown: true
 
 # Set the soft limit on the number of file descriptors synapse can use
 # Zero is used to indicate synapse should set the soft limit to the
@@ -127,7 +127,7 @@ presence:
 # 'false'. Note that profile data is also available via the federation
 # API, unless allow_profile_lookup_over_federation is set to false.
 #
-#require_auth_for_profile_requests: true
+require_auth_for_profile_requests: true
 
 # Uncomment to require a user to share a room with another user in order
 # to retrieve their profile information. Only checked on Client-Server
@@ -142,13 +142,13 @@ presence:
 # of the above two settings, and whether or not the users share a server.
 # Defaults to 'true'.
 #
-#include_profile_data_on_invite: false
+include_profile_data_on_invite: true
 
 # If set to 'true', removes the need for authentication to access the server's
 # public rooms directory through the client API, meaning that anyone can
 # query the room directory. Defaults to 'false'.
 #
-#allow_public_rooms_without_auth: true
+allow_public_rooms_without_auth: true
 
 # If set to 'true', allows any other homeserver to fetch the server's public
 # rooms directory via federation. Defaults to 'false'.
@@ -163,7 +163,7 @@ presence:
 # For example, for room version 1, default_room_version should be set
 # to "1".
 #
-#default_room_version: "9"
+default_room_version: "11"
 
 # The GC threshold parameters to pass to `gc.set_threshold`, if defined
 #
@@ -196,7 +196,7 @@ presence:
 # If disabled, new messages will not be indexed for searching and users
 # will receive errors when searching for messages. Defaults to enabled.
 #
-#enable_search: false
+enable_search: true
 
 # Prevent outgoing requests from being sent to the following blacklisted IP address
 # CIDR ranges. If this option is not specified then it defaults to private IP
@@ -327,8 +327,8 @@ listeners:
     tls: false
     type: http
     x_forwarded: true
-    bind_addresses: ['::1', '127.0.0.1']
-
+    bind_addresses: ['0.0.0.0']
+    
     resources:
       - names: [client, federation]
         compress: false
@@ -382,7 +382,7 @@ manhole_settings:
 
 # How to reach the server admin, used in ResourceLimitError
 #
-#admin_contact: 'mailto:admin@server.com'
+admin_contact: 'mailto:srguyyt@outlook.com'
 
 # Global blocking
 #
@@ -453,19 +453,19 @@ manhole_settings:
 limit_remote_rooms:
   # Uncomment to enable room complexity checking.
   #
-  #enabled: true
+  enabled: true
 
   # the limit above which rooms cannot be joined. The default is 1.0.
   #
-  #complexity: 0.5
+  complexity: 0.5
 
   # override the error which is returned when the room is too complex.
   #
-  #complexity_error: "This room is too complex."
+  complexity_error: "This room is too complex."
 
   # allow server admins to join complex rooms. Default is false.
   #
-  #admins_can_join: true
+  admins_can_join: true
 
 # Whether to require a user to be in the room to add an alias to it.
 # Defaults to 'true'.
@@ -476,14 +476,14 @@ limit_remote_rooms:
 # events with profile information that differ from the target's global profile.
 # Defaults to 'true'.
 #
-#allow_per_room_profiles: false
+allow_per_room_profiles: false
 
 # The largest allowed file size for a user avatar. Defaults to no restriction.
 #
 # Note that user avatar changes will not work if this is set without
 # using Synapse's media repository.
 #
-#max_avatar_size: 10M
+max_avatar_size: 95M
 
 # The MIME types allowed for user avatars. Defaults to no restriction.
 #
@@ -694,10 +694,10 @@ retention:
 # purely on this application-layer restriction.  If not specified, the
 # default is to whitelist everything.
 #
-#federation_domain_whitelist:
-#  - lon.example.com
-#  - nyc.example.com
-#  - syd.example.com
+federation_domain_whitelist:
+  - sky0cloud.dpdns.org
+  - matrix.org
+  - app.element.io
 
 # Report prometheus metrics on the age of PDUs being sent to and received from
 # the following domains. This can be used to give an idea of "delay" on inbound
@@ -706,21 +706,21 @@ retention:
 #
 # By default, no domains are monitored in this way.
 #
-#federation_metrics_domains:
-#  - matrix.org
-#  - example.com
+federation_metrics_domains:
+  - matrix.org
+  - sky0cloud.dpdns.org
 
 # Uncomment to disable profile lookup over federation. By default, the
 # Federation API allows other homeservers to obtain profile data of any user
 # on this homeserver. Defaults to 'true'.
 #
-#allow_profile_lookup_over_federation: false
+allow_profile_lookup_over_federation: true
 
 # Uncomment to allow device display name lookup over federation. By default, the
 # Federation API prevents other homeservers from obtaining the display names of
 # user devices on this homeserver. Defaults to 'false'.
 #
-#allow_device_name_lookup_over_federation: true
+allow_device_name_lookup_over_federation: true
 
 
 ## Caching ##
@@ -1262,13 +1262,13 @@ oembed:
 # you use either captcha, email, or token-based verification to verify that new users are not bots. In order to enable registration
 # without any verification, you must also set `enable_registration_without_verification`, found below.
 #
-#enable_registration: false
+enable_registration: true
 
 # Enable registration without email or captcha verification. Note: this option is *not* recommended,
 # as registration without verification is a known vector for spam and abuse. Defaults to false. Has no effect
 # unless `enable_registration` is also enabled.
 #
-#enable_registration_without_verification: true
+enable_registration_without_verification: true
 
 # Time that a user's session remains valid for, after they log in.
 #
@@ -1343,7 +1343,7 @@ oembed:
 
 # Enable 3PIDs lookup requests to identity servers from this server.
 #
-#enable_3pid_lookup: true
+enable_3pid_lookup: true
 
 # Require users to submit a token during registration.
 # Tokens can be managed using the admin API:
@@ -1352,18 +1352,18 @@ oembed:
 # Disabling this option will not delete any tokens previously generated.
 # Defaults to false. Uncomment the following to require tokens:
 #
-#registration_requires_token: true
+registration_requires_token: true
 
 # Allow users to submit a token during registration to bypass any required 3pid
 # steps configured in `registrations_require_3pid`.
 # Defaults to false, requiring that registration tokens (if enabled) complete a 3pid flow.
 #
-#enable_registration_token_3pid_bypass: false
+enable_registration_token_3pid_bypass: true
 
 # If set, allows registration of standard or admin accounts by anyone who
 # has the shared secret, even if registration is otherwise disabled.
 #
-#registration_shared_secret: <PRIVATE STRING>
+registration_shared_secret: adminonlygroup
 
 # Set the number of bcrypt rounds used to generate password hash.
 # Larger numbers increase the work factor needed to generate the hash.
@@ -1377,7 +1377,7 @@ oembed:
 # participate in rooms hosted on this server which have been made
 # accessible to anonymous users.
 #
-#allow_guest_access: false
+allow_guest_access: false
 
 # The identity server which we suggest that clients should use when users log
 # in on this server.
@@ -1385,7 +1385,7 @@ oembed:
 # (By default, no suggestion is made, so it is left up to the client.
 # This setting is ignored unless public_baseurl is also explicitly set.)
 #
-#default_identity_server: https://matrix.org
+default_identity_server: https://vector.im
 
 # Handle threepid (email/phone etc) registration and password resets through a set of
 # *trusted* identity servers. Note that this allows the configured identity server to
@@ -1418,7 +1418,7 @@ account_threepid_delegates:
 #
 # Does not apply to server administrators. Defaults to 'true'
 #
-#enable_set_displayname: false
+enable_set_displayname: true
 
 # Whether users are allowed to change their avatar after it has been
 # initially set. Useful when provisioning users based on the contents
@@ -1426,14 +1426,14 @@ account_threepid_delegates:
 #
 # Does not apply to server administrators. Defaults to 'true'
 #
-#enable_set_avatar_url: false
+enable_set_avatar_url: true
 
 # Whether users can change the 3PIDs associated with their accounts
 # (email address and msisdn).
 #
 # Defaults to 'true'
 #
-#enable_3pid_changes: false
+enable_3pid_changes: false
 
 # Users who register on this homeserver will automatically be joined
 # to these rooms.
@@ -1461,7 +1461,7 @@ account_threepid_delegates:
 # Defaults to true. Uncomment the following line to disable automatically
 # creating auto-join rooms.
 #
-#autocreate_auto_join_rooms: false
+autocreate_auto_join_rooms: true
 
 # Whether the auto_join_rooms that are auto-created are available via
 # federation. Only has an effect if autocreate_auto_join_rooms is true.
@@ -1486,7 +1486,7 @@ account_threepid_delegates:
 # federated servers if autocreate_auto_join_rooms_federated is true (the default).
 # Uncomment the following to require an invitation to join these rooms.
 #
-#autocreate_auto_join_room_preset: private_chat
+autocreate_auto_join_room_preset: public_chat
 
 # The local part of the user id which is used to create auto_join_rooms if
 # autocreate_auto_join_rooms is true. If this is not provided then the
@@ -1512,7 +1512,7 @@ account_threepid_delegates:
 #
 # Defaults to true.
 #
-#auto_join_rooms_for_guests: false
+auto_join_rooms_for_guests: true
 
 # Whether to inhibit errors raised when registering a new account if the user ID
 # already exists. If turned on, that requests to /register/available will always
@@ -1635,7 +1635,7 @@ room_prejoin_state:
 
 # Path to the signing key to sign messages with
 #
-signing_key_path: "CONFDIR/SERVERNAME.signing.key"
+signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 
 # The keys that the server used to sign messages with but won't use
 # to sign new messages.
@@ -2456,7 +2456,7 @@ push:
   # The default value is "true" to include message details. Uncomment to only
   # include the event ID and room ID in push notification payloads.
   #
-  #include_content: false
+  include_content: true
 
   # When a push notification is received, an unread count is also sent.
   # This number can either be calculated as the number of unread messages
@@ -2466,7 +2466,7 @@ push:
   # rooms with unread messages in them. Uncomment to instead send the number
   # of unread messages.
   #
-  #group_unread_count_by_room: false
+  group_unread_count_by_room: true
 
 
 ## Rooms ##
