@@ -1,27 +1,26 @@
 {
-    "brand": "Element",
-    "default_theme": "dark",
-    "default_server_config": {
-        "m.homeserver": {
-            "base_url": "https://sky0cloud.dpdns.org",
-            "server_name": "sky0cloud.dpdns.org"
-        }
-    },
-    "registration_requires_token": true,
-    "disable_custom_urls": true,
-    "disable_guests": true,
-    "disable_3pid_login": false,
-    "permalink_prefix": "https://sky0cloud.dpdns.org",
-    "show_labs_settings": true,
-    "jitsi": {
-        "preferred_domain": "meet.element.io"
-    },
-    "map_style_url": "https://api.maptiler.com/maps/streets-v2/?key=pUvnmFuYZ2QCGg0rpNta",
-    "features": {
-        "feature_spotlight": true,
-        "feature_video_rooms": true,
-        "feature_element_call_video_rooms": true
-    },
-    "default_federate": true,
-    "default_device_display_name": "Sky0Cloud Web"
+  "brand": "Sky0Cloud",
+  "default_theme": "dark",
+  "default_server_name": "sky0cloud.dpdns.org",
+  "default_server_config": {
+    "m.homeserver": {
+      "base_url": "https://sky0cloud.dpdns.org",
+      "server_name": "sky0cloud.dpdns.org"
+    }
+  },
+  "disable_custom_urls": true,
+  "disable_guests": true,
+  "permalink_prefix": "https://sky0cloud.dpdns.org",
+  "branding": {
+    "welcome_background_url": "background.jpg",
+    "auth_header_logo_url": "icon.png",
+    "auth_footer_links": [
+      {
+        "text": "Access Code Required to Register",
+        "url": "https://sky0cloud.dpdns.org/#/register"
+      }
+    ]
+  },
+  "show_labs_settings": true,
+  "map_style_url": "https://api.maptiler.com/maps/streets-v2/?key=pUvnmFuYZ2QCGg0rpNta"
 }
