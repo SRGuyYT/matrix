@@ -11,12 +11,6 @@
     "disable_guests": true,
     "disable_3pid_login": false,
     "permalink_prefix": "https://sky0cloud.dpdns.org",
-    "room_directory": {
-        "servers": [
-            "sky0cloud.dpdns.org",
-            "matrix.org"
-        ]
-    },
     "show_labs_settings": true,
     "jitsi": {
         "preferred_domain": "meet.element.io"
