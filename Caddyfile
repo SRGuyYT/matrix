@@ -1,5 +1,6 @@
 {
     email admin@sky0cloud.dpdns.org
+    auto https off
 }
 
 # Main Matrix + Element endpoint
