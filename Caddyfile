@@ -1,21 +1,11 @@
 {
-    # Global options
     email chapmlinks@gmail.com
-    auto_https on
-    servers {
-        protocol {
-            allow_h2c
-        }
-    }
 }
 
-# Sky0Cloud main site
 sky0cloud.dpdns.org {
     encode zstd gzip
 
-    # -------------------------
     # Matrix discovery endpoint
-    # -------------------------
     handle /.well-known/matrix/* {
         root * /var/www/matrix
         file_server
@@ -23,30 +13,22 @@ sky0cloud.dpdns.org {
         header Access-Control-Allow-Origin "*"
     }
 
-    # -------------------------
     # Continuwuity API
-    # -------------------------
     handle_path /_matrix/* {
         reverse_proxy sky0cloud-continuwuity:6167
     }
 
-    # -------------------------
     # Element Web UI
-    # -------------------------
     handle {
         reverse_proxy sky0cloud-element-web:80
     }
 
-    # -------------------------
     # Logging
-    # -------------------------
     log {
         output file /var/log/caddy/access.log
         format console
     }
 
-    # -------------------------
-    # TLS (HTTPS)
-    # -------------------------
+    # TLS (HTTPS) automatically enabled
     tls chapmlinks@gmail.com
 }
