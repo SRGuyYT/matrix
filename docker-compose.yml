@@ -49,14 +49,12 @@ services:
       - sky0cloud-network
 
   synapse-admin:
-    # UPDATED: Now using the etkecc version you requested
     image: ghcr.io/etkecc/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
     restart: unless-stopped
     depends_on:
       - synapse
     environment:
-      # This pre-fills the login page for you
       - BASE_URL=https://sky0cloud.dpdns.org
     networks:
       - sky0cloud-network
