@@ -1,52 +1,115 @@
 services:
-  continuwuity:
-    image: ghcr.io/continuwuity/continuwuity:latest
-    container_name: sky0cloud-continuwuity
+  postgres:
+    image: postgres:16-alpine
+    container_name: sky0cloud-postgres
     restart: unless-stopped
     environment:
-      PORT: "6167"
-      CONDUWUIT_CONFIG: '/etc/conduwuit.toml'
+      POSTGRES_DB: synapse
+      POSTGRES_USER: synapse_user
+      POSTGRES_PASSWORD: CHANGE_ME_DB_PASSWORD
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - /etc/resolv.conf:/etc/resolv.conf:ro
-      - ./continuwuity/continuwuity.toml:/etc/conduwuit.toml:rw
-      - ./continuwuity/data:/var/lib/conduwuit:rw
-      - ./data_backup:/var/lib/conduwuit_backup:rw
+      - ./postgres/data:/var/lib/postgresql/data
+    networks:
+      - sky0cloud-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: sky0cloud-synapse
+    restart: unless-stopped
+    environment:
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      UID: "991"
+      GID: "991"
+    volumes:
+      - ./synapse/data:/data
+      - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro
+      - ./synapse/log.config:/data/log.config:ro
     networks:
       - sky0cloud-network
     expose:
-      - "6167"
-      - "8000"
+      - "8008"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8008/_matrix/client/versions"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  synapse-admin:
+    image: awesometechnologies/synapse-admin:latest
+    container_name: sky0cloud-synapse-admin
+    restart: unless-stopped
+    environment:
+      SYNAPSE_ADMIN_API_BASE_URL: "https://sky0cloud.dpdns.org"
+      REACT_APP_SERVER: "https://sky0cloud.dpdns.org"
+      REACT_APP_SERVER_NAME: "sky0cloud.dpdns.org"
+    expose:
+      - "80"
+    ports:
+      - "8000:80"
+    depends_on:
+      - synapse
+    networks:
+      - sky0cloud-network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   element-web:
     image: vectorim/element-web:latest
     container_name: sky0cloud-element-web
     restart: unless-stopped
-    environment:
-      - BASE_URL=https://sky0cloud.dpdns.org
     volumes:
       - ./element/config.json:/app/config.json:ro
       - ./element/icon.png:/app/icon.png:ro
       - ./element/background.jpg:/app/background.jpg:ro
     depends_on:
-      - continuwuity
+      - synapse
     networks:
       - sky0cloud-network
     expose:
       - "80"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   caddy:
     image: caddy:2-alpine
     container_name: sky0cloud-caddy
     restart: unless-stopped
     depends_on:
-      - continuwuity
+      - synapse
       - element-web
+      - synapse-admin
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:rw
-      - ./.well-known:/var/www/matrix/.well-known:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     networks:
@@ -57,6 +120,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   sky0cloud-network:

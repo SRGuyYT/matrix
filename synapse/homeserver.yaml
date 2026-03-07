@@ -1,0 +1,84 @@
+server_name: "sky0cloud.dpdns.org"
+pid_file: /data/homeserver.pid
+public_baseurl: "https://sky0cloud.dpdns.org/"
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [client, federation]
+        compress: false
+
+# PostgreSQL backend (recommended for production performance).
+database:
+  name: psycopg2
+  args:
+    user: synapse_user
+    password: CHANGE_ME_DB_PASSWORD
+    dbname: synapse
+    host: sky0cloud-postgres
+    port: 5432
+    cp_min: 5
+    cp_max: 10
+    keepalives_idle: 10
+    keepalives_interval: 10
+    keepalives_count: 3
+
+log_config: "/data/log.config"
+media_store_path: /data/media_store
+registration_shared_secret: "CHANGE_ME_REGISTRATION_SHARED_SECRET"
+macaroon_secret_key: "CHANGE_ME_MACAROON_SECRET"
+form_secret: "CHANGE_ME_FORM_SECRET"
+signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
+
+trusted_key_servers:
+  - server_name: "matrix.org"
+
+# Cache tuning for 8GB RAM host.
+caches:
+  global_factor: 0.5
+
+max_upload_size: "50M"
+
+allow_guest_access: false
+enable_registration: true
+enable_registration_without_verification: false
+enable_3pid_changes: true
+
+# Mailgun SMTP + links used for validation/password reset emails.
+email:
+  smtp_host: "smtp.mailgun.org"
+  smtp_port: 587
+  smtp_user: "official@no-reply.skyservers.qzz.io"
+  smtp_pass: "CHANGE_ME_SMTP_PASSWORD"
+  require_transport_security: true
+  notif_from: "Sky0Cloud Matrix <official@no-reply.skyservers.qzz.io>"
+  app_name: "Sky0Cloud Matrix"
+  client_base_url: "https://sky0cloud.dpdns.org"
+  invite_client_location: "https://sky0cloud.dpdns.org"
+  validation_token_lifetime: 1h
+
+# Keep token endpoints enabled in Synapse.
+account_threepid_delegates: {}
+
+password_config:
+  enabled: true
+
+# Fixes '[403] Not allowed to publish room' for local users.
+room_list_publication_rules:
+  - user_id: "@*:sky0cloud.dpdns.org"
+    action: allow
+  - action: deny
+
+rc_message:
+  per_second: 0.2
+  burst_count: 10
+
+report_stats: false
+
+# Lower-volume logging to reduce disk writes.
+loggers:
+  synapse.storage.SQL: warning

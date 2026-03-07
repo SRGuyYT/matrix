@@ -1,63 +1,12 @@
-# Sky0Cloud: Matrix Stack Behind Cloudflare Tunnel
+# Sky0Cloud Matrix/Synapse Deployment Guide
 
-This repository provides a clean, production-ready Matrix deployment for `sky0cloud.dpdns.org` using Docker Compose.
+This guide overhauls the deployment for:
+- `https://sky0cloud.dpdns.org` (Element + Matrix API)
+- `https://matrix.sky0cloud.dpdns.org` (Synapse Admin UI)
 
-## Architecture
+It fixes routing/CORS issues, email verification link behavior, public room publication rules, and migrates from SQLite to PostgreSQL.
 
-```text
-Internet
-  ↓
-Cloudflare Tunnel
-  ↓
-Caddy (HTTP only, port 80)
-  ↓
-Continuwuity Matrix Homeserver
-  ↓
-Element Web Client
-```
-
-## Project structure
-
-```text
-Sky0Cloud/
-├── docker-compose.yml
-├── Caddyfile
-├── README.md
-├── continuwuity/
-│   └── data/
-├── element/
-│   └── config.json
-└── cloudflared/
-    └── config.yml
-```
-
-## Services
-
-- `continuwuity` - Matrix homeserver (port `8008` internally).
-- `element-web` - Matrix web client.
-- `caddy` - HTTP-only reverse proxy and Matrix well-known endpoint handler.
-
-All services are attached to the internal Docker bridge network: `sky0cloud-network`.
-
-## Prerequisites
-
-- Docker Engine + Docker Compose plugin installed.
-- Cloudflare account/w domain and Zero Trust Tunnel configured.
-- Domain `sky0cloud.dpdns.org` delegated/managed in Cloudflare.
-
-## 1) Cloudflare Tunnel setup
-
-### Option A: Tunnel
-
-1. In Cloudflare Zero Trust, create a tunnel.
-2. Add a public hostname:
-   - `sky0cloud.dpdns.org` -> HTTP -> `caddy:80`
-3. Copy the install command.
-4. Run it
-
-## 2) Start the stack
-
-From the repository root:
+## 1) Deploy the optimized stack
 
 ```bash
 docker compose pull
@@ -69,105 +18,138 @@ Check status:
 ```bash
 docker compose ps
 docker compose logs -f caddy
-docker compose logs -f continuwuity
-docker compose logs -f cloudflared
+docker compose logs -f synapse
+docker compose logs -f postgres
 ```
 
-## 3) Routing behavior
+## 2) Caddy routing model (clean CORS + React-admin compatibility)
 
-Caddy runs **HTTP only** (no TLS, no certificate management).
+The `Caddyfile` now:
+- serves `sky0cloud.dpdns.org` with Element on `/`
+- proxies `/_matrix/*` and `/_synapse/*` to Synapse
+- serves `matrix.sky0cloud.dpdns.org` from `synapse-admin`
+- strips upstream CORS headers and sets a single CORS policy to avoid duplicated `Access-Control-Allow-Origin`
 
-- `/.well-known/matrix/client` -> JSON response for Matrix client discovery.
-- `/.well-known/matrix/server` -> JSON response for Matrix server discovery.
-- `/.well-known/matrix/*` -> proxied to `continuwuity:8008`.
-- `/_matrix/*` -> proxied to `continuwuity:8008`.
-- `/` -> proxied to `element-web:80`.
-
-Cloudflare provides external HTTPS and forwards traffic through the tunnel to `http://caddy:80`.
-
-## 4) Federation and Matrix validation
-
-### Verify well-known endpoints
+Apply/reload:
 
 ```bash
-curl -s https://sky0cloud.dpdns.org/.well-known/matrix/client | jq
-curl -s https://sky0cloud.dpdns.org/.well-known/matrix/server | jq
+docker compose exec caddy caddy validate --config /etc/caddy/Caddyfile
+docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
 ```
 
-Expected values:
-- `m.homeserver.base_url` = `https://sky0cloud.dpdns.org`
-- `m.server` = `sky0cloud.dpdns.org:443`
+## 3) Synapse email/password-reset/verification settings
 
-### Verify Matrix client API reachability
+In `synapse/homeserver.yaml`, ensure all of these are correct:
+
+- `public_baseurl: "https://sky0cloud.dpdns.org/"`
+- listener has `x_forwarded: true`
+- SMTP `email:` block configured for Mailgun
+- `email.client_base_url: "https://sky0cloud.dpdns.org"`
+- `password_config.enabled: true`
+- `account_threepid_delegates: {}`
+
+Then restart Synapse:
 
 ```bash
-curl -s https://sky0cloud.dpdns.org/_matrix/client/versions | jq
+docker compose restart synapse
+docker compose logs -f synapse
 ```
 
-### Federation test
+## 4) Fix public room listing permission errors (403)
 
-Use Matrix federation tester:
+`room_list_publication_rules` are included to allow local users:
 
-- https://federationtester.matrix.org/#sky0cloud.dpdns.org
+```yaml
+room_list_publication_rules:
+  - user_id: "@*:sky0cloud.dpdns.org"
+    action: allow
+  - action: deny
+```
 
-You should see successful federation checks for SRV/delegation and Matrix endpoints.
+## 5) SQLite -> PostgreSQL migration (safe sequence)
 
-## 5) Functional checklist
+> IMPORTANT: do not run `VACUUM` on SQLite during migration.
 
-After deployment, verify:
-
-- Element loads at `https://sky0cloud.dpdns.org`
-- User registration/login works
-- Room creation works
-- Media upload and download work (`/_matrix/media/*`)
-- Federation joins/public rooms work across external servers
-
-## 6) Persistent data
-
-- Matrix homeserver data is persisted under `./continuwuity/data`.
-- Caddy runtime data/config are persisted in Docker managed volumes (`caddy_data`, `caddy_config`).
-
-## 7) Troubleshooting
-
-### Tunnel connected but site unavailable
-
-- Check tunnel status in Cloudflare Zero Trust dashboard.
-- Confirm `cloudflared` can resolve `caddy` on Docker network.
-- Verify `cloudflared/config.yml` ingress points to `http://caddy:80`.
-
-### Element loads but login fails
-
-- Confirm `element/config.json` base URL matches `https://sky0cloud.dpdns.org`.
-- Confirm Caddy routes `/_matrix/*` to `continuwuity:8008`.
-- Check homeserver logs: `docker compose logs -f continuwuity`.
-
-### Federation fails
-
-- Confirm `/.well-known/matrix/server` returns `{"m.server":"sky0cloud.dpdns.org:443"}`.
-- Ensure Cloudflare Tunnel hostname exactly matches `sky0cloud.dpdns.org`.
-- Run federation tester and review failing checks.
-
-### Media uploads/downloads fail
-
-- Confirm `MAX_REQUEST_SIZE=524288000` is applied.
-- Ensure reverse proxy forwards `/_matrix/media/*` (covered by `/_matrix/*`).
-- Check container disk space and write permissions in `./continuwuity/data`.
-
-## 8) Update and maintenance
+### Step A - create a PostgreSQL migration config
 
 ```bash
-docker compose pull
-docker compose up -d
+cp synapse/homeserver.yaml synapse/homeserver-postgres.yaml
 ```
 
-To restart a single service:
+Ensure `homeserver-postgres.yaml` has PostgreSQL `database:` settings.
+
+### Step B - initial snapshot migration while service is online
 
 ```bash
-docker compose restart continuwuity
+docker compose stop synapse
+cp synapse/data/homeserver.db synapse/data/homeserver.db.snapshot
+docker compose start synapse
+
+docker compose run --rm \
+  -v "$PWD/synapse:/data" \
+  synapse \
+  synapse_port_db \
+  --sqlite-database /data/data/homeserver.db.snapshot \
+  --postgres-config /data/homeserver-postgres.yaml
 ```
 
-To stop the stack:
+### Step C - final delta migration (short downtime)
 
 ```bash
-docker compose down
+docker compose stop synapse
+
+docker compose run --rm \
+  -v "$PWD/synapse:/data" \
+  synapse \
+  synapse_port_db \
+  --sqlite-database /data/data/homeserver.db \
+  --postgres-config /data/homeserver-postgres.yaml
 ```
+
+### Step D - cut over to PostgreSQL permanently
+
+```bash
+cp synapse/homeserver-postgres.yaml synapse/homeserver.yaml
+docker compose up -d synapse
+```
+
+### Step E - verify DB backend
+
+```bash
+docker compose logs -f synapse | rg -i "postgres|psycopg2|database"
+```
+
+## 6) Validation checklist
+
+```bash
+curl -i https://sky0cloud.dpdns.org/_matrix/client/versions
+curl -i https://sky0cloud.dpdns.org/_synapse/admin/v1/server_version
+curl -i https://sky0cloud.dpdns.org/_matrix/client/v3/account/password/email/requestToken
+curl -i https://matrix.sky0cloud.dpdns.org
+```
+
+Expected:
+- no duplicate CORS headers
+- admin panel loads without route loops
+- password reset token endpoint is no longer `404 M_UNRECOGNIZED`
+
+## 7) Security hardening (must-do)
+
+Rotate secrets in `synapse/homeserver.yaml`:
+- `macaroon_secret_key`
+- `registration_shared_secret`
+- `form_secret`
+
+Then force token/session invalidation:
+
+```bash
+docker compose exec synapse register_new_matrix_user --help >/dev/null
+# rotate secrets first, then restart
+docker compose restart synapse
+```
+
+Recommended extras:
+- Keep admin registration closed (`enable_registration: false`) after bootstrap.
+- Use long random passwords for SMTP/DB and store with Docker secrets or env files not committed to git.
+- Restrict admin panel access at Cloudflare Zero Trust (Access policy) in addition to Synapse auth.
+- Keep regular encrypted backups of `synapse/data` and `postgres/data`.

@@ -1,41 +1,53 @@
 {
-    email chapmlinks@gmail.com
-    auto_https off
+    email admin@sky0cloud.dpdns.org
 }
 
-:80 {
+# Main Matrix + Element endpoint
+sky0cloud.dpdns.org {
+    encode zstd gzip
 
-    # Matrix federation discovery
-    handle /.well-known/matrix/server {
-        header Content-Type application/json
-        respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200
+    # CORS preflight for Matrix client/admin API calls.
+    @matrix_preflight {
+        method OPTIONS
+        path /_matrix/* /_synapse/*
+    }
+    handle @matrix_preflight {
+        header Access-Control-Allow-Origin "https://matrix.sky0cloud.dpdns.org"
+        header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        header Access-Control-Allow-Headers "Authorization, Content-Type, Accept, Origin, User-Agent"
+        header Access-Control-Max-Age "86400"
+        respond "" 204
     }
 
-    # Matrix client discovery
-    handle /.well-known/matrix/client {
-        header Access-Control-Allow-Origin *
-        header Content-Type application/json
-        respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}` 200
-    }
+    # Matrix Client + Federation + Synapse Admin API
+    @matrix path /_matrix/* /_synapse/*
+    handle @matrix {
+        reverse_proxy http://sky0cloud-synapse:8008 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
 
-    # Matrix API + Media
-    handle /_matrix/* {
-        reverse_proxy http://sky0cloud-continuwuity:6167 {
-            header_up Host sky0cloud.dpdns.org
-            header_up X-Forwarded-Proto https
-            header_up X-Forwarded-For {remote}
+            # Prevent duplicate CORS headers from upstream.
+            header_down -Access-Control-Allow-Origin
+            header_down -Access-Control-Allow-Headers
+            header_down -Access-Control-Allow-Methods
         }
+
+        # Set one canonical CORS policy for admin panel cross-origin calls.
+        header Access-Control-Allow-Origin "https://matrix.sky0cloud.dpdns.org"
+        header Access-Control-Allow-Credentials "true"
+        header Vary "Origin"
     }
 
-    # Element Web Client
+    # Element web client
     handle {
-        reverse_proxy http://element-web:80
+        reverse_proxy http://sky0cloud-element-web:80
     }
+}
 
-    # CORS headers (helps media loading)
-    header {
-        Access-Control-Allow-Origin *
-        Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
-        Access-Control-Allow-Headers *
-    }
+# Synapse Admin panel endpoint
+matrix.sky0cloud.dpdns.org {
+    encode zstd gzip
+    reverse_proxy http://sky0cloud-synapse-admin:80
 }
