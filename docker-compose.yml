@@ -1,5 +1,5 @@
 services:
-postgres:
+  postgres:
     image: postgres:16-alpine
     container_name: sky0cloud-postgres
     restart: unless-stopped
@@ -45,11 +45,6 @@ postgres:
       timeout: 10s
       retries: 5
       start_period: 30s
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   synapse-admin:
     image: awesometechnologies/synapse-admin:latest
@@ -67,11 +62,6 @@ postgres:
       - synapse
     networks:
       - sky0cloud-network
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   element-web:
     image: vectorim/element-web:latest
@@ -87,11 +77,6 @@ postgres:
       - sky0cloud-network
     expose:
       - "80"
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   caddy:
     image: caddy:2-alpine
@@ -103,23 +88,13 @@ postgres:
       - synapse-admin
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     networks:
       - sky0cloud-network
-    healthcheck:
-      test: ["CMD", "caddy", "version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
 
 networks:
   sky0cloud-network:
