@@ -11,7 +11,6 @@ allow_announcements_check = true
 # Registration
 allow_registration = true
 registration_token = "itoldyou"
-allow_device_name_federation = true
 
 # Globe Settines
 max_request_size = 524288000
@@ -31,7 +30,6 @@ trusted_servers = ["matrix.org", "sky0cloud.dpdns.org"]
 #    "!sY6VaQPiY428XrWcWB:sky0cloud.dpdns.org"
 # ]
 query_trusted_key_servers_first = true
-query_trusted_key_servers_first_on_join = true
 log = "info"
 query_all_nameservers = true
 allow_encryption = true
