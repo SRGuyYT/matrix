@@ -5,6 +5,11 @@ signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 report_stats: true
 suppress_key_server_warning: true 
 
+## --- Auto Join Servers --- ##
+auto_join_rooms:
+  - "#general:sky0cloud.dpdns.org"
+  - "#info:sky0cloud.dpdns.org"
+
 ## --- LISTENERS & TRUSTED PROXIES --- ##
 listeners:
   - port: 8008
@@ -16,12 +21,22 @@ listeners:
       - names: [client, federation]
         compress: false
 
-# --- ROOM DIRECTORY & PUBLISHING --- #
+## --- SERVER NOTICES (Fixes 400 Error) --- ##
+server_notices:
+  system_mxid_localpart: "system"
+  system_mxid_display_name: "System Administrator"
+  room_name: "Server Notices"
+
+# --- ROOM DIRECTORY & PUBLISHING (Fixes 403 Error) --- #
 allow_public_rooms_over_federation: true
 allow_public_rooms_without_auth: true
+# Explicitly allow the admin user to publish rooms
+room_list_publication_rules:
+  - user_id: "@system:sky0cloud.dpdns.org"
+    alias: "*"
+    action: "allow"
 
-# --- UNIVERSAL CORS (CROSS-TALK) --- #
-# This allows Admin UI, Element, and custom scripts to connect
+# --- UNIVERSAL CORS --- #
 cors_allow_origin:
   - "*"
 
