@@ -44,6 +44,7 @@ max_upload_size: "250M"
 allow_guest_access: false
 
 enable_registration: true
+registration_requires_token: true
 enable_registration_without_verification: false
 enable_3pid_changes: true
 
