@@ -36,12 +36,10 @@ trusted_key_servers:
   - server_name: "matrix.org"
   - server_name: "sky0cloud.dpdns.org"
 
-# Cache tuning for 8GB RAM host
 caches:
   global_factor: 0.5
 
 max_upload_size: "0"
-
 allow_guest_access: false
 
 # --- REGISTRATION SETTINGS ---
