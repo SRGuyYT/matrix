@@ -7,6 +7,7 @@
             "server_name": "sky0cloud.dpdns.org"
         }
     },
+    "registration_requires_token": true,
     "disable_custom_urls": true,
     "disable_guests": true,
     "disable_3pid_login": false,
