@@ -107,7 +107,6 @@ services:
       - synapse-admin
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -132,5 +131,4 @@ networks:
     driver: bridge
 
 volumes:
-  caddy_data:
   caddy_config:
