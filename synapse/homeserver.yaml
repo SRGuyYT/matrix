@@ -12,7 +12,7 @@ listeners:
       - names: [client, federation]
         compress: false
 
-# PostgreSQL backend (recommended for production performance).
+# PostgreSQL backend
 database:
   name: psycopg2
   args:
@@ -44,11 +44,16 @@ caches:
 max_upload_size: "50M"
 
 allow_guest_access: false
+
+# --- REGISTRATION LOCK SETTINGS ---
 enable_registration: true
-enable_registration_without_verification: false
+registration_requires_token: true
+enable_registration_without_verification: true
+# ----------------------------------
+
 enable_3pid_changes: true
 
-# Mailgun SMTP + links used for validation/password reset emails.
+# Mailgun SMTP
 email:
   smtp_host: "smtp.mailgun.org"
   smtp_port: 587
@@ -61,13 +66,11 @@ email:
   invite_client_location: "https://sky0cloud.dpdns.org"
   validation_token_lifetime: 1h
 
-# Keep token endpoints enabled in Synapse.
 account_threepid_delegates: {}
 
 password_config:
   enabled: true
 
-# Fixes '[403] Not allowed to publish room' for local users.
 room_list_publication_rules:
   - user_id: "@*:sky0cloud.dpdns.org"
     action: allow
@@ -79,6 +82,5 @@ rc_message:
 
 report_stats: false
 
-# Lower-volume logging to reduce disk writes.
 loggers:
   synapse.storage.SQL: warning
