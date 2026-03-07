@@ -45,11 +45,10 @@ allow_guest_access: false
 # --- REGISTRATION SETTINGS ---
 enable_registration: true
 registration_requires_token: true
+registration_shared_secret: "itoldyou"
 enable_registration_without_verification: true
 
 registration_tokens:
-  itoldyou_admin:
-    admin: true
   itoldyou:
     admin: false
 # ----------------------------------
