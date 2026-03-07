@@ -1,12 +1,8 @@
-{
-    email chapmlinks@gmail.com
-    auto_https off
-}
-
+# Sky0Cloud behind Cloudflare (HTTP only)
 sky0cloud.dpdns.org {
     encode zstd gzip
 
-    # Matrix well-known
+    # Matrix well-known endpoint
     handle /.well-known/matrix/* {
         root * /var/www/matrix
         file_server
@@ -14,12 +10,12 @@ sky0cloud.dpdns.org {
         header Access-Control-Allow-Origin "*"
     }
 
-    # Continuwuity API
+    # Continuwuity API (Conduwuit backend)
     handle_path /_matrix/* {
         reverse_proxy sky0cloud-continuwuity:6167
     }
 
-    # Serve Element Web
+    # Serve Element Web frontend
     handle {
         root * /app
         try_files {path} /index.html
