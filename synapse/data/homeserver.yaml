@@ -5,10 +5,9 @@ signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 report_stats: true
 suppress_key_server_warning: true
 
-## --- Auto Join --- ##
-auto_join_rooms:
-  - "#general:sky0cloud.dpdns.org"
-  - "#info:sky0cloud.dpdns.org"
+## --- DIRECTORY SETTINGS (Fixes Permission Denied Crash) --- ##
+media_store_path: "/data/media_store"
+uploads_path: "/data/uploads"
 
 ## --- LISTENERS --- ##
 listeners:
@@ -21,13 +20,13 @@ listeners:
       - names: [client, federation]
         compress: false
 
-## --- SERVER NOTICES (Fixes 400 Error) --- ##
+## --- SERVER NOTICES (Fixes M_UNKNOWN 400) --- ##
 server_notices:
   system_mxid_localpart: "system"
   system_mxid_display_name: "System Administrator"
   room_name: "Server Notices"
 
-## --- ROOM DIRECTORY (Fixes 403 Error) --- ##
+## --- ROOM DIRECTORY (Fixes M_UNKNOWN 403) --- ##
 allow_public_rooms_over_federation: true
 allow_public_rooms_without_auth: true
 room_list_publication_rules:
@@ -47,7 +46,7 @@ database:
     cp_min: 5
     cp_max: 15
 
-## --- REGISTRATION --- ##
+## --- REGISTRATION & TOKENS --- ##
 enable_registration: true
 registration_requires_token: true
 registration_shared_secret: "itoldyou"
@@ -62,3 +61,8 @@ trusted_proxies:
 
 macaroon_secret_key: "23dc71ec52cc8e18dc0afbf1df20f0d53b471377321d4ae664afa511f3919a71de5466e6432a95d8e48d47b2be17099536fc6d83512a08b984746be3f1324c5b"
 form_secret: "538aef9fc03da17410a71d57bca5c5383db6784db2b40a8d07b208f01bf2f2629abcbe68d424a976c5664fc66ceef4e4a76440ff13c77822c814489f19621bfd"
+
+## --- AUTO JOIN --- ##
+auto_join_rooms:
+  - "#general:sky0cloud.dpdns.org"
+  - "#info:sky0cloud.dpdns.org"
