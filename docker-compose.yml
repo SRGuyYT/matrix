@@ -44,8 +44,10 @@ services:
     restart: unless-stopped
     depends_on:
       - synapse
-    volumes:
-      - ./element/config.json:/app/config.json:ro
+    volumes:      
+      - ./element/config.json:/app/config.json
+      - ./element/icon.png:/app/icon.png
+      - ./element/background.jpg:/app/background.jpg
     networks:
       - sky0cloud-network
 
