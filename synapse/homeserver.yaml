@@ -753,7 +753,7 @@ caches:
   #
   # Defaults to 0.5, which will half the size of all caches.
   #
-  #global_factor: 1.0
+  global_factor: 0.5
 
   # A dictionary of cache name to cache factor for that individual
   # cache. Overrides the global cache factor for a given cache.
@@ -863,9 +863,18 @@ caches:
 # see https://matrix-org.github.io/synapse/latest/postgres.html.
 #
 database:
-  name: sqlite3
+  name: psycopg2
   args:
-    database: DATADIR/homeserver.db
+    user: synapse_user
+    password: Sky@Cloud0Tho
+    dbname: synapse
+    host: sky0cloud-postgres
+    port: 5432
+    cp_min: 5
+    cp_max: 10
+    keepalives_idle: 10
+    keepalives_interval: 10
+    keepalives_count: 3
 
 
 ## Logging ##
@@ -914,10 +923,10 @@ log_config: "CONFDIR/SERVERNAME.log.config"
 #
 # The defaults are as shown below.
 #
-#rc_message:
-#  per_second: 0.2
-#  burst_count: 10
-#
+rc_message:
+  per_second: 0.2
+  burst_count: 10
+
 #rc_registration:
 #  per_second: 0.17
 #  burst_count: 3
@@ -1006,7 +1015,7 @@ log_config: "CONFDIR/SERVERNAME.log.config"
 
 # Directory where uploaded images and attachments are stored.
 #
-media_store_path: "DATADIR/media_store"
+media_store_path: /data/media_store
 
 # Media storage providers allow media to be stored in different
 # locations.
@@ -1028,7 +1037,7 @@ media_store_path: "DATADIR/media_store"
 # your reverse proxy's config. Notably Nginx has a small max body size by default.
 # See https://matrix-org.github.io/synapse/latest/reverse_proxy.html.
 #
-#max_upload_size: 50M
+max_upload_size: "95M"
 
 # Maximum number of pixels that will be thumbnailed
 #
@@ -1363,7 +1372,11 @@ enable_registration_token_3pid_bypass: true
 # If set, allows registration of standard or admin accounts by anyone who
 # has the shared secret, even if registration is otherwise disabled.
 #
-registration_shared_secret: adminonlygroup
+registration_shared_secret: "itoldyou"
+
+registration_tokens:
+  itoldyou:
+    admin: false
 
 # Set the number of bcrypt rounds used to generate password hash.
 # Larger numbers increase the work factor needed to generate the hash.
@@ -1408,9 +1421,7 @@ default_identity_server: https://vector.im
 # by the Matrix Identity Service API specification:
 # https://matrix.org/docs/spec/identity_service/latest
 #
-account_threepid_delegates:
-    #email: https://example.com     # Delegate email sending to example.com
-    #msisdn: http://localhost:8090  # Delegate SMS sending to this local process
+account_threepid_delegates: {}
 
 # Whether users are allowed to change their displayname after it has
 # been initially set. Useful when provisioning users based on the
@@ -1433,7 +1444,7 @@ enable_set_avatar_url: true
 #
 # Defaults to 'true'
 #
-enable_3pid_changes: false
+enable_3pid_changes: true
 
 # Users who register on this homeserver will automatically be joined
 # to these rooms.
@@ -1553,7 +1564,7 @@ metrics_flags:
 
 # Whether or not to report anonymized homeserver usage statistics.
 #
-#report_stats: true|false
+report_stats: true
 
 # The endpoint to report the anonymized homeserver usage statistics to.
 # Defaults to https://matrix.org/report-usage-stats/push
@@ -1623,13 +1634,13 @@ room_prejoin_state:
 # the registration_shared_secret is used, if one is given; otherwise,
 # a secret key is derived from the signing key.
 #
-#macaroon_secret_key: <PRIVATE STRING>
+macaroon_secret_key: "23dc71ec52cc8e18dc0afbf1df20f0d53b471377321d4ae664afa511f3919a71de5466e6432a95d8e48d47b2be17099536fc6d83512a08b984746be3f1324c5b"
 
 # a secret which is used to calculate HMACs for form values, to stop
 # falsification of values. Must be specified for the User Consent
 # forms to work.
 #
-#form_secret: <PRIVATE STRING>
+form_secret: "538aef9fc03da17410a71d57bca5c5383db6784db2b40a8d07b208f01bf2f2629abcbe68d424a976c5664fc66ceef4e4a76440ff13c77822c814489f19621bfd"
 
 ## Signing Keys ##
 
@@ -1700,6 +1711,7 @@ old_signing_keys:
 #
 trusted_key_servers:
   - server_name: "matrix.org"
+  - server_name: "sky0cloud.dpdns.org"
 
 # Uncomment the following to disable the warning that is emitted when the
 # trusted_key_servers include 'matrix.org'. See above.
@@ -2220,7 +2232,7 @@ password_config:
    # Set to `only_for_reauth` to permit reauthentication for users that
    # have passwords and are already logged in.
    #
-   #enabled: false
+   enabled: true
 
    # Uncomment to disable authentication against the local password
    # database. This is ignored if `enabled` is false, and is only useful
@@ -2294,6 +2306,16 @@ ui_auth:
 # https://matrix-org.github.io/synapse/latest/templates.html for more information.
 #
 email:
+  smtp_host: "smtp.mailgun.org"
+  smtp_port: 587
+  smtp_user: "official@no-reply.skyservers.qzz.io"
+  smtp_pass: "TheBoss123?com"
+  require_transport_security: true
+  notif_from: "Sky0Cloud Matrix <official@no-reply.skyservers.qzz.io>"
+  app_name: "Sky0Cloud Matrix"
+  client_base_url: "https://sky0cloud.dpdns.org"
+  invite_client_location: "https://sky0cloud.dpdns.org"
+  validation_token_lifetime: 1h
   # The hostname of the outgoing SMTP server to use. Defaults to 'localhost'.
   #
   #smtp_host: mail.server
@@ -2712,11 +2734,10 @@ stats:
 #
 # The default is:
 #
-#room_list_publication_rules:
-#  - user_id: "*"
-#    alias: "*"
-#    room_id: "*"
-#    action: allow
+room_list_publication_rules:
+  - user_id: "@*:sky0cloud.dpdns.org"
+    action: allow
+  - action: deny
 
 
 ## Opentracing ##
