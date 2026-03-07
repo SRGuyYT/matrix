@@ -3,19 +3,19 @@ public_baseurl: "https://sky0cloud.dpdns.org/"
 pid_file: /data/homeserver.pid
 signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 report_stats: true
-suppress_key_server_warning: true 
+suppress_key_server_warning: true
 
-## --- Auto Join Servers --- ##
+## --- Auto Join --- ##
 auto_join_rooms:
   - "#general:sky0cloud.dpdns.org"
   - "#info:sky0cloud.dpdns.org"
 
-## --- LISTENERS & TRUSTED PROXIES --- ##
+## --- LISTENERS --- ##
 listeners:
   - port: 8008
     tls: false
     type: http
-    x_forwarded: true 
+    x_forwarded: true
     bind_addresses: ['0.0.0.0']
     resources:
       - names: [client, federation]
@@ -27,25 +27,15 @@ server_notices:
   system_mxid_display_name: "System Administrator"
   room_name: "Server Notices"
 
-# --- ROOM DIRECTORY & PUBLISHING (Fixes 403 Error) --- #
+## --- ROOM DIRECTORY (Fixes 403 Error) --- ##
 allow_public_rooms_over_federation: true
 allow_public_rooms_without_auth: true
-# Explicitly allow the admin user to publish rooms
 room_list_publication_rules:
   - user_id: "@system:sky0cloud.dpdns.org"
     alias: "*"
     action: "allow"
 
-# --- UNIVERSAL CORS --- #
-cors_allow_origin:
-  - "*"
-
-trusted_proxies:
-  - "127.0.0.1"
-  - "172.16.0.0/12" 
-  - "10.0.0.0/8"    
-
-## --- DATABASE (POSTGRES) --- ##
+## --- DATABASE --- ##
 database:
   name: psycopg2
   args:
@@ -57,40 +47,18 @@ database:
     cp_min: 5
     cp_max: 15
 
-## --- REGISTRATION & TOKENS --- ##
+## --- REGISTRATION --- ##
 enable_registration: true
-registration_requires_token: true 
+registration_requires_token: true
 registration_shared_secret: "itoldyou"
 allow_guest_access: false
 
-## --- EMAIL (MAILGUN) --- ##
-email:
-  enable_notifs: true
-  smtp_host: "smtp.mailgun.org"
-  smtp_port: 587
-  smtp_user: "official@no-reply.skyservers.qzz.io"
-  smtp_pass: "TheBoss123?com"
-  require_transport_security: true
-  notif_from: "Sky0Cloud Matrix <official@no-reply.skyservers.qzz.io>"
-  app_name: "Sky0Cloud Matrix"
-  client_base_url: "https://sky0cloud.dpdns.org"
-  validation_token_lifetime: 1h
+## --- SECURITY & CORS --- ##
+cors_allow_origin: "*"
+trusted_proxies:
+  - "127.0.0.1"
+  - "172.16.0.0/12"
+  - "10.0.0.0/8"
 
-account_threepid:
-  email:
-    client_can_lookup: true
-    address_is_trusted: true
-
-## --- MEDIA & CACHING --- ##
-media_store_path: /data/media_store
-max_upload_size: "100M" 
-caches:
-  global_factor: 1.2 
-
-## --- SECURITY SECRETS --- ##
 macaroon_secret_key: "23dc71ec52cc8e18dc0afbf1df20f0d53b471377321d4ae664afa511f3919a71de5466e6432a95d8e48d47b2be17099536fc6d83512a08b984746be3f1324c5b"
 form_secret: "538aef9fc03da17410a71d57bca5c5383db6784db2b40a8d07b208f01bf2f2629abcbe68d424a976c5664fc66ceef4e4a76440ff13c77822c814489f19621bfd"
-
-## --- FEDERATION --- ##
-trusted_key_servers:
-  - server_name: "matrix.org"
