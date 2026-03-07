@@ -30,8 +30,9 @@ services:
       SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
       PYTHONIOENCODING: utf-8
     volumes:
+      # We mount the whole data folder. 
+      # Your homeserver.yaml should be inside ./synapse/data/
       - ./synapse/data:/data
-      - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro
     networks:
       - sky0cloud-network
     expose:
