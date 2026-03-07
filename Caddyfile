@@ -1,30 +1,41 @@
-# Sky0Cloud behind Cloudflare (HTTP only)
-sky0cloud.dpdns.org {
-    encode zstd gzip
+{
+    email chapmlinks@gmail.com
+    auto_https off
+}
 
-    # Matrix well-known endpoint
-    handle /.well-known/matrix/* {
-        root * /var/www/matrix
-        file_server
-        header Content-Type "application/json; charset=utf-8"
-        header Access-Control-Allow-Origin "*"
+:80 {
+
+    # Matrix federation discovery
+    handle /.well-known/matrix/server {
+        header Content-Type application/json
+        respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200
     }
 
-    # Continuwuity API (Conduwuit backend)
-    handle_path /_matrix/* {
-        reverse_proxy sky0cloud-continuwuity:6167
+    # Matrix client discovery
+    handle /.well-known/matrix/client {
+        header Access-Control-Allow-Origin *
+        header Content-Type application/json
+        respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}` 200
     }
 
-    # Serve Element Web frontend
+    # Matrix API + Media
+    handle /_matrix/* {
+        reverse_proxy http://sky0cloud-continuwuity:6167 {
+            header_up Host sky0cloud.dpdns.org
+            header_up X-Forwarded-Proto https
+            header_up X-Forwarded-For {remote}
+        }
+    }
+
+    # Element Web Client
     handle {
-        root * /app
-        try_files {path} /index.html
-        file_server
+        reverse_proxy http://element-web:80
     }
 
-    # Logging
-    log {
-        output file /var/log/caddy/access.log
-        format console
+    # CORS headers (helps media loading)
+    header {
+        Access-Control-Allow-Origin *
+        Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+        Access-Control-Allow-Headers *
     }
 }
