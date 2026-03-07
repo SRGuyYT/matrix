@@ -1,20 +1,15 @@
 {
     email chapmlinks@gmail.com
-    auto_https off # Correct: Cloudflare Tunnel handles the SSL
+    auto_https off
 }
 
-# Main Site: Matrix + Element Web + MAS Redirects
 sky0cloud.dpdns.org:80 {
-    # ---------------------------------------------------------
-    # 1. Matrix Discovery Endpoints (MAS / OIDC / MSC2965)
-    # ---------------------------------------------------------
+    # 1. Discovery
     handle /.well-known/matrix/client {
         header Content-Type application/json
         header Access-Control-Allow-Origin *
         respond `{
-            "m.homeserver": {
-                "base_url": "https://sky0cloud.dpdns.org"
-            },
+            "m.homeserver": {"base_url": "https://sky0cloud.dpdns.org"},
             "org.matrix.msc2965.authentication": {
                 "issuer": "https://sky0cloud.dpdns.org/",
                 "account": "https://sky0cloud.dpdns.org/account"
@@ -27,44 +22,31 @@ sky0cloud.dpdns.org:80 {
         respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200
     }
 
-    # ---------------------------------------------------------
-    # 2. MAS Authentication Traffic
-    # Route OIDC and account management to the MAS container
-    # ---------------------------------------------------------
-    handle /auth/* /account/* /re-auth/* /.well-known/openid-configuration {
+    # 2. MAS (Corrected Matcher)
+    @mas_paths {
+        path /auth/* /account/* /re-auth/* /.well-known/openid-configuration
+    }
+    handle @mas_paths {
         reverse_proxy http://sky0cloud-mas:8080 {
             header_up X-Forwarded-For {header.Cf-Connecting-Ip}
         }
     }
 
-    # ---------------------------------------------------------
-    # 3. Matrix API (Synapse)
-    # ---------------------------------------------------------
+    # 3. Synapse API
     handle /_matrix/* /_synapse/* {
         reverse_proxy http://sky0cloud-synapse:8008 {
             header_up X-Forwarded-For {header.Cf-Connecting-Ip}
-            
-            # CORS CLEANUP: Prevents Synapse from clashing with Caddy
             header_down -Access-Control-Allow-Origin
             header_down Access-Control-Allow-Origin "*"
-            header_down -Access-Control-Allow-Methods
-            header_down Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-            header_down -Access-Control-Allow-Headers
-            header_down Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
         }
     }
 
-    # ---------------------------------------------------------
-    # 4. Element Web Client
-    # ---------------------------------------------------------
+    # 4. Element Web
     handle {
         reverse_proxy http://sky0cloud-element-web:80
     }
 }
 
-# -----------------------------------
-# Synapse Admin Web Panel
-# -----------------------------------
 matrix.sky0cloud.dpdns.org:80 {
     reverse_proxy http://sky0cloud-synapse-admin:80
 }
