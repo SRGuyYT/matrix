@@ -5,9 +5,7 @@
 
 # Main Site: Matrix + Element Web
 sky0cloud.dpdns.org:80 {
-    # ------------------------------
-    # 1. Matrix Discovery (Simplified for Synapse)
-    # ------------------------------
+    # 1. Matrix Discovery
     handle /.well-known/matrix/client {
         header Content-Type application/json
         header Access-Control-Allow-Origin *
@@ -19,31 +17,24 @@ sky0cloud.dpdns.org:80 {
         respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200
     }
 
-    # ------------------------------
     # 2. Matrix API (Synapse)
-    # ------------------------------
-    # We use a named matcher to group /_matrix and /_synapse together
     @synapse_paths path /_matrix/* /_synapse/*
     handle @synapse_paths {
         reverse_proxy http://sky0cloud-synapse:8008 {
             header_up X-Forwarded-For {header.Cf-Connecting-Ip}
-            
-            # CORS fix to ensure Element can talk to Synapse
             header_down -Access-Control-Allow-Origin
             header_down Access-Control-Allow-Origin "*"
         }
     }
 
-    # ------------------------------
     # 3. Element Web Client
-    # ------------------------------
-    # This serves the Default Welcome Page you wanted
     handle {
         reverse_proxy http://sky0cloud-element-web:80
     }
 }
 
-# Synapse Admin UI (The etkecc version)
+# Synapse Admin UI (Fixed for etkecc)
 matrix.sky0cloud.dpdns.org:80 {
-    reverse_proxy http://sky0cloud-synapse-admin:80
+    # Changed from 80 to 8000 for the etkecc image
+    reverse_proxy http://sky0cloud-synapse-admin:8000
 }
