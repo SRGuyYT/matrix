@@ -3,6 +3,13 @@
     auto_https off
 }
 
+# Synapse Admin UI
+matrix.sky0cloud.dpdns.org:80 {
+    # Add CORS headers here too, just in case the UI needs to talk to itself
+    header Access-Control-Allow-Origin "https://matrix.sky0cloud.dpdns.org"
+    reverse_proxy sky0cloud-synapse-admin:8080
+}
+
 # Main Site: Matrix + Element Web
 sky0cloud.dpdns.org:80 {
     # 1. Matrix Discovery
@@ -12,20 +19,23 @@ sky0cloud.dpdns.org:80 {
         respond `{"m.homeserver": {"base_url": "https://sky0cloud.dpdns.org"}}` 200
     }
 
-    handle /.well-known/matrix/server {
-        header Content-Type application/json
-        respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200
-    }
-
-    # 2. Matrix API (Synapse) + Admin API
+    # 2. Matrix API + Admin API
     @synapse_paths path /_matrix/* /_synapse/* /_admin/*
     handle @synapse_paths {
+        # Handle CORS Preflight (OPTIONS) requests immediately
+        @cors_preflight method OPTIONS
+        handle @cors_preflight {
+            header Access-Control-Allow-Origin "https://matrix.sky0cloud.dpdns.org"
+            header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+            header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+            respond "" 204
+        }
+
         reverse_proxy http://sky0cloud-synapse:8008 {
             header_up X-Forwarded-For {header.Cf-Connecting-Ip}
             
-            # This ensures headers are cleaned and replaced correctly
-            header_down -Access-Control-Allow-Origin
-            header_down Access-Control-Allow-Origin "*"
+            # Inject headers on the way back to the browser
+            header_down Access-Control-Allow-Origin "https://matrix.sky0cloud.dpdns.org"
             header_down Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
             header_down Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
         }
@@ -34,14 +44,5 @@ sky0cloud.dpdns.org:80 {
     # 3. Element Web Client
     handle {
         reverse_proxy http://sky0cloud-element-web:80
-    }
-}
-
-# Synapse Admin UI
-matrix.sky0cloud.dpdns.org:80 {
-    reverse_proxy sky0cloud-synapse-admin:8080 {
-        # Standard proxy headers for the Admin UI
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
     }
 }
