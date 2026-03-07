@@ -3,40 +3,28 @@
     auto_https off
 }
 
-sky0cloud.dpdns.org {
+:80 {
     encode zstd gzip
 
-    # Serve .well-known for Matrix discovery
-    root * /var/www/matrix
-    file_server /var/www/matrix/.well-known
-
-    # Discovery headers
-    @wellknownClient path /.well-known/matrix/client
-    handle @wellknownClient {
-        header Content-Type application/json
-        header Access-Control-Allow-Origin *
-        respond 200 '{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}'
+    # Discovery Headers for Matrix
+    header /.well-known/matrix/* {
+        Content-Type "application/json; charset=utf-8"
+        Access-Control-Allow-Origin "*"
     }
 
-    @wellknownServer path /.well-known/matrix/server
-    handle @wellknownServer {
-        header Content-Type application/json
-        respond 200 '{"m.server":"sky0cloud.dpdns.org:443"}'
+    # Serve the static files from the volume
+    handle /.well-known/matrix/* {
+        root * /var/www/matrix
+        file_server
     }
 
-    # API proxy for Continuwuity
+    # Proxy to Conduwuit (Backend)
     handle_path /_matrix/* {
-        reverse_proxy continuwuity:6167
+        reverse_proxy sky0cloud-continuwuity:6167
     }
 
-    # Element Web UI
+    # Proxy to Element (Frontend)
     handle {
-        reverse_proxy element-web:80
-    }
-
-    log {
-        output file /var/log/caddy/access.log {
-            roll true
-        }
+        reverse_proxy sky0cloud-element-web:80
     }
 }
