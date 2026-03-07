@@ -6,26 +6,25 @@
 :80 {
     encode zstd gzip
 
-    # Set global headers for Matrix discovery
+    # Discovery Headers
     header /.well-known/matrix/* {
         Content-Type "application/json; charset=utf-8"
         Access-Control-Allow-Origin "*"
     }
 
-    # Serve the physical files you just pulled via git
+    # Serve static discovery files
     handle /.well-known/matrix/* {
         root * /var/www/matrix
         file_server
     }
 
-    # Matrix client-server API
+    # API Proxy
     handle_path /_matrix/* {
-        reverse_proxy continuwuity:6167
+        reverse_proxy sky0cloud-continuwuity:6167
     }
 
-    # Default (Element Web)
+    # Web UI Proxy
     handle {
-        reverse_proxy element-web:80
+        reverse_proxy sky0cloud-element-web:80
     }
-}
 }
