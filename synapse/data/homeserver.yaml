@@ -5,7 +5,7 @@ signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 report_stats: true
 suppress_key_server_warning: true
 
-## --- DIRECTORY SETTINGS (Fixes Permission Denied Crash) --- ##
+## --- DIRECTORY SETTINGS (CRITICAL: Fixes Permission Denied) --- ##
 media_store_path: "/data/media_store"
 uploads_path: "/data/uploads"
 
@@ -20,13 +20,13 @@ listeners:
       - names: [client, federation]
         compress: false
 
-## --- SERVER NOTICES (Fixes M_UNKNOWN 400) --- ##
+## --- SERVER NOTICES (Fixes 400 Error) --- ##
 server_notices:
   system_mxid_localpart: "system"
   system_mxid_display_name: "System Administrator"
   room_name: "Server Notices"
 
-## --- ROOM DIRECTORY (Fixes M_UNKNOWN 403) --- ##
+## --- ROOM DIRECTORY (Fixes 403 Error) --- ##
 allow_public_rooms_over_federation: true
 allow_public_rooms_without_auth: true
 room_list_publication_rules:
@@ -46,7 +46,7 @@ database:
     cp_min: 5
     cp_max: 15
 
-## --- REGISTRATION & TOKENS --- ##
+## --- REGISTRATION --- ##
 enable_registration: true
 registration_requires_token: true
 registration_shared_secret: "itoldyou"
