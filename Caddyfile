@@ -1,7 +1,3 @@
-{
-    email chapmlinks@gmail.com
-}
-
 sky0cloud.dpdns.org {
     encode zstd gzip
 
@@ -20,7 +16,8 @@ sky0cloud.dpdns.org {
 
     # Element Web UI
     handle {
-        reverse_proxy sky0cloud-element-web:80
+        root * /app  # serve Element's files properly
+        try_files {path} /index.html
     }
 
     # Logging
@@ -29,6 +26,6 @@ sky0cloud.dpdns.org {
         format console
     }
 
-    # TLS (HTTPS) automatically enabled
+    # TLS for HTTPS
     tls chapmlinks@gmail.com
 }
