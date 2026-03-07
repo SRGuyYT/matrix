@@ -37,14 +37,14 @@ sky0cloud.dpdns.org:80 {
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-For {header.Cf-Connecting-Ip}
 
-            # FIX: Strip any CORS headers sent by Synapse to prevent "*, *" duplicates
+            # STRIP DUPLICATES: Deletes container headers so only Caddy's are sent
             header_down -Access-Control-Allow-Origin
             header_down -Access-Control-Allow-Methods
             header_down -Access-Control-Allow-Headers
         }
     }
 
-    # 4. Element Web Client (Fallback for all other paths)
+    # 4. Element Web Client
     handle {
         reverse_proxy http://sky0cloud-element-web:80
     }
