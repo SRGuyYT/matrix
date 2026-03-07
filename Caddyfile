@@ -1,7 +1,7 @@
 sky0cloud.dpdns.org {
     encode zstd gzip
 
-    # Matrix discovery endpoint
+    # Matrix well-known
     handle /.well-known/matrix/* {
         root * /var/www/matrix
         file_server
@@ -14,10 +14,11 @@ sky0cloud.dpdns.org {
         reverse_proxy sky0cloud-continuwuity:6167
     }
 
-    # Element Web UI
+    # Serve Element Web
     handle {
-        root * /app  # serve Element's files properly
+        root * /app
         try_files {path} /index.html
+        file_server
     }
 
     # Logging
@@ -26,6 +27,6 @@ sky0cloud.dpdns.org {
         format console
     }
 
-    # TLS for HTTPS
+    # TLS (HTTPS)
     tls chapmlinks@gmail.com
 }
