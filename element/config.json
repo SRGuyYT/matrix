@@ -1,5 +1,5 @@
 {
-    "brand": "Sky0Cloud",
+    "brand": "Element",
     "default_theme": "dark",
     "default_server_config": {
         "m.homeserver": {
@@ -15,20 +15,6 @@
         "servers": [
             "sky0cloud.dpdns.org",
             "matrix.org"
-        ]
-    },
-    "branding": {
-        "welcome_background_url": "background.jpg",
-        "auth_header_logo_url": "icon.png",
-        "auth_footer_links": [
-            {
-                "text": "Join with Invite Code",
-                "url": "/#/register?token=itoldyou"
-            },
-            {
-                "text": "Support",
-                "url": "https://sky0cloud.dpdns.org/help"
-            }
         ]
     },
     "show_labs_settings": true,
