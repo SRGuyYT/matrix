@@ -6,24 +6,27 @@
 :80 {
     encode zstd gzip
 
-    # Discovery Headers
-    header /.well-known/matrix/* {
-        Content-Type "application/json; charset=utf-8"
-        Access-Control-Allow-Origin "*"
+    # .well-known client discovery
+    @wellknownClient path /.well-known/matrix/client
+    handle @wellknownClient {
+        header Content-Type application/json
+        header Access-Control-Allow-Origin *
+        respond 200 '{"m.homeserver":{"base_url":"http://sky0cloud.dpdns.org"}}'
     }
 
-    # Serve static discovery files
-    handle /.well-known/matrix/* {
-        root * /var/www/matrix
-        file_server
+    # .well-known server discovery
+    @wellknownServer path /.well-known/matrix/server
+    handle @wellknownServer {
+        header Content-Type application/json
+        respond 200 '{"m.server":"sky0cloud.dpdns.org:80"}'
     }
 
-    # API Proxy
+    # Matrix API proxy
     handle_path /_matrix/* {
         reverse_proxy sky0cloud-continuwuity:6167
     }
 
-    # Web UI Proxy
+    # Catch-all → Element Web
     handle {
         reverse_proxy sky0cloud-element-web:80
     }
