@@ -1,0 +1,64 @@
+server_name: "sky0cloud.dpdns.org"
+pid_file: /data/homeserver.pid
+public_baseurl: "https://sky0cloud.dpdns.org/"
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [client, federation]
+        compress: false
+
+database:
+  name: sqlite3
+  args:
+    database: /data/homeserver.db
+
+log_config: "/data/log.config"
+media_store_path: /data/media_store
+registration_shared_secret: "CHANGE_ME_REGISTRATION_SHARED_SECRET"
+macaroon_secret_key: "CHANGE_ME_MACAROON_SECRET"
+form_secret: "CHANGE_ME_FORM_SECRET"
+signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
+
+trusted_key_servers:
+  - server_name: "matrix.org"
+
+# HDD-friendly limits and cache sizes for 8 GB RAM hosts.
+caches:
+  global_factor: 0.5
+
+max_upload_size: "50M"
+
+allow_guest_access: false
+enable_registration: true
+enable_registration_without_verification: false
+
+# Required for password reset and 3PID email flows.
+email:
+  smtp_host: "smtp.mailgun.org"
+  smtp_port: 587
+  smtp_user: "official@no-reply.skyservers.qzz.io"
+  smtp_pass: "CHANGE_ME_SMTP_PASSWORD"
+  require_transport_security: true
+  notif_from: "Sky0Cloud Matrix <official@no-reply.skyservers.qzz.io>"
+  app_name: "Sky0Cloud Matrix"
+
+# Enables /_matrix/client/v3/account/password/email/requestToken
+account_threepid_delegates: {}
+
+password_config:
+  enabled: true
+
+rc_message:
+  per_second: 0.2
+  burst_count: 10
+
+report_stats: false
+
+# Lower-volume logging to reduce disk writes.
+loggers:
+  synapse.storage.SQL: warning

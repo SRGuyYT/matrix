@@ -1,53 +1,83 @@
 services:
-  continuwuity:
-    image: ghcr.io/continuwuity/continuwuity:latest
-    container_name: sky0cloud-continuwuity
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: sky0cloud-synapse
     restart: unless-stopped
     environment:
-      PORT: "6167"
-      CONDUWUIT_CONFIG: '/etc/conduwuit.toml'
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      UID: "991"
+      GID: "991"
     volumes:
-      - /etc/resolv.conf:/etc/resolv.conf:ro
-      - ./continuwuity/continuwuity.toml:/etc/conduwuit.toml:rw
-      - ./continuwuity/data:/var/lib/conduwuit:rw
-      - ./data_backup:/var/lib/conduwuit_backup:rw
+      - ./synapse/data:/data
+      - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro
+      - ./synapse/log.config:/data/log.config:ro
     networks:
       - sky0cloud-network
     expose:
-      - "6167"
-      - "8000"
+      - "8008"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8008/_matrix/client/versions"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  synapse-admin:
+    image: awesometechnologies/synapse-admin:latest
+    container_name: sky0cloud-synapse-admin
+    restart: unless-stopped
+    expose:
+      - "80"
+    ports:
+      - "8000:80"
+    depends_on:
+      - synapse
+    networks:
+      - sky0cloud-network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   element-web:
     image: vectorim/element-web:latest
     container_name: sky0cloud-element-web
     restart: unless-stopped
-    environment:
-      - BASE_URL=https://sky0cloud.dpdns.org
     volumes:
       - ./element/config.json:/app/config.json:ro
       - ./element/icon.png:/app/icon.png:ro
       - ./element/background.jpg:/app/background.jpg:ro
     depends_on:
-      - continuwuity
+      - synapse
     networks:
       - sky0cloud-network
     expose:
       - "80"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   caddy:
     image: caddy:2-alpine
     container_name: sky0cloud-caddy
     restart: unless-stopped
     depends_on:
-      - continuwuity
+      - synapse
       - element-web
+      - synapse-admin
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:rw
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./.well-known:/var/www/matrix/.well-known:ro
-      - caddy_data:/data
       - caddy_config:/config
     networks:
       - sky0cloud-network
@@ -57,6 +87,28 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: sky0cloud-cloudflared
+    restart: unless-stopped
+    command: tunnel --config /etc/cloudflared/config.yml run
+    depends_on:
+      - caddy
+    volumes:
+      - ./cloudflared:/etc/cloudflared:ro
+    networks:
+      - sky0cloud-network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   sky0cloud-network:
@@ -64,5 +116,4 @@ networks:
     driver: bridge
 
 volumes:
-  caddy_data:
   caddy_config:
