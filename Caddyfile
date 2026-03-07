@@ -1,6 +1,9 @@
 sky0cloud.dpdns.org {
     encode zstd gzip
 
+    # Disable automatic HTTPS redirects (if needed)
+    auto_https off
+
     # Matrix well-known
     handle /.well-known/matrix/* {
         root * /var/www/matrix
@@ -27,6 +30,6 @@ sky0cloud.dpdns.org {
         format console
     }
 
-    # TLS (HTTPS)
+    # TLS email for certs (if you want HTTPS later)
     tls chapmlinks@gmail.com
 }
