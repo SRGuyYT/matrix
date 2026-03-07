@@ -3,11 +3,11 @@ services:
     image: postgres:16-alpine
     container_name: sky0cloud-postgres
     restart: unless-stopped
-    shm_size: '256mb' # Optimization: Give Postgres more shared memory for Matrix queries
+    shm_size: '256mb'
     environment:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
-      POSTGRES_PASSWORD: "Sky@Cloud0Tho" # Keep your password secure
+      POSTGRES_PASSWORD: "Sky@Cloud0Tho"
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
@@ -15,7 +15,7 @@ services:
       - sky0cloud-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse"]
-      interval: 5s # Faster healthchecks for quicker startups
+      interval: 5s
       timeout: 5s
       retries: 5
 
@@ -28,11 +28,10 @@ services:
         condition: service_healthy
     environment:
       SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-      # Optimization: Ensure Python handles UTF-8 correctly
       PYTHONIOENCODING: utf-8
     volumes:
       - ./synapse/data:/data
-      - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro # Mount as Read-Only to prevent accidental overwrites
+      - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro
     networks:
       - sky0cloud-network
     expose:
@@ -46,19 +45,19 @@ services:
       - synapse
     volumes:
       - ./element/config.json:/app/config.json:ro
-      - ./element/icon.png:/app/icon.png:ro
-      - ./element/background.jpg:/app/background.jpg:ro
     networks:
       - sky0cloud-network
 
   synapse-admin:
-    image: awesometechnologies/synapse-admin:latest
+    # UPDATED: Now using the etkecc version you requested
+    image: ghcr.io/etkecc/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
     restart: unless-stopped
     depends_on:
       - synapse
     environment:
-      - REACT_APP_SERVER=https://sky0cloud.dpdns.org
+      # This pre-fills the login page for you
+      - BASE_URL=https://sky0cloud.dpdns.org
     networks:
       - sky0cloud-network
 
@@ -66,8 +65,6 @@ services:
     image: caddy:2-alpine
     container_name: sky0cloud-caddy
     restart: unless-stopped
-    # If using Cloudflare Tunnel, port 443 is often handled by the tunnel.
-    # We keep 80 open for the tunnel's local traffic.
     ports:
       - "80:80"
     volumes:
@@ -82,7 +79,7 @@ services:
 
 networks:
   sky0cloud-network:
-    name: matrix_network # Naming the network makes it easier for Cloudflare Tunnel to find
+    name: matrix_network
     driver: bridge
 
 volumes:
