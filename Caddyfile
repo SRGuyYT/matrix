@@ -35,6 +35,5 @@ sky0cloud.dpdns.org:80 {
 
 # Synapse Admin UI
 matrix.sky0cloud.dpdns.org:80 {
-    # Changed back to 80 based on your docker ps output
-    reverse_proxy http://sky0cloud-synapse-admin:80
+    reverse_proxy sky0cloud-synapse-admin:8080
 }
