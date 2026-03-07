@@ -40,7 +40,7 @@ trusted_key_servers:
 caches:
   global_factor: 0.5
 
-max_upload_size: "50M"
+max_upload_size: "95M"
 
 allow_guest_access: false
 
