@@ -1,42 +1,52 @@
 {
+    # Global options
     email chapmlinks@gmail.com
-    auto_https off
+    auto_https on
+    servers {
+        protocol {
+            allow_h2c
+        }
+    }
 }
 
+# Sky0Cloud main site
 sky0cloud.dpdns.org {
     encode zstd gzip
 
-    # Serve .well-known for Matrix discovery
-    root * /var/www/matrix
-    file_server /var/www/matrix/.well-known
-
-    # Discovery headers
-    @wellknownClient path /.well-known/matrix/client
-    handle @wellknownClient {
-        header Content-Type application/json
-        header Access-Control-Allow-Origin *
-        respond 200 '{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}'
+    # -------------------------
+    # Matrix discovery endpoint
+    # -------------------------
+    handle /.well-known/matrix/* {
+        root * /var/www/matrix
+        file_server
+        header Content-Type "application/json; charset=utf-8"
+        header Access-Control-Allow-Origin "*"
     }
 
-    @wellknownServer path /.well-known/matrix/server
-    handle @wellknownServer {
-        header Content-Type application/json
-        respond 200 '{"m.server":"sky0cloud.dpdns.org:443"}'
-    }
-
-    # API proxy for Continuwuity
+    # -------------------------
+    # Continuwuity API
+    # -------------------------
     handle_path /_matrix/* {
-        reverse_proxy continuwuity:6167
+        reverse_proxy sky0cloud-continuwuity:6167
     }
 
+    # -------------------------
     # Element Web UI
+    # -------------------------
     handle {
-        reverse_proxy element-web:80
+        reverse_proxy sky0cloud-element-web:80
     }
 
-    # Simple logging (without unsupported 'roll')
+    # -------------------------
+    # Logging
+    # -------------------------
     log {
         output file /var/log/caddy/access.log
-        format single_field common_log
+        format console
     }
+
+    # -------------------------
+    # TLS (HTTPS)
+    # -------------------------
+    tls chapmlinks@gmail.com
 }
