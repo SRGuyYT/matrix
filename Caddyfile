@@ -1,35 +1,42 @@
+{
+    email chapmlinks@gmail.com
+    auto_https off
+}
+
 sky0cloud.dpdns.org {
     encode zstd gzip
 
-    # Disable automatic HTTPS redirects (if needed)
-    auto_https off
+    # Serve .well-known for Matrix discovery
+    root * /var/www/matrix
+    file_server /var/www/matrix/.well-known
 
-    # Matrix well-known
-    handle /.well-known/matrix/* {
-        root * /var/www/matrix
-        file_server
-        header Content-Type "application/json; charset=utf-8"
-        header Access-Control-Allow-Origin "*"
+    # Discovery headers
+    @wellknownClient path /.well-known/matrix/client
+    handle @wellknownClient {
+        header Content-Type application/json
+        header Access-Control-Allow-Origin *
+        respond 200 '{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}'
     }
 
-    # Continuwuity API
+    @wellknownServer path /.well-known/matrix/server
+    handle @wellknownServer {
+        header Content-Type application/json
+        respond 200 '{"m.server":"sky0cloud.dpdns.org:443"}'
+    }
+
+    # API proxy for Continuwuity
     handle_path /_matrix/* {
-        reverse_proxy sky0cloud-continuwuity:6167
+        reverse_proxy continuwuity:6167
     }
 
-    # Serve Element Web
+    # Element Web UI
     handle {
-        root * /app
-        try_files {path} /index.html
-        file_server
+        reverse_proxy element-web:80
     }
 
-    # Logging
     log {
-        output file /var/log/caddy/access.log
-        format console
+        output file /var/log/caddy/access.log {
+            roll true
+        }
     }
-
-    # TLS email for certs (if you want HTTPS later)
-    tls chapmlinks@gmail.com
 }
