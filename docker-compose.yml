@@ -8,9 +8,9 @@ services:
       UID: "991"
       GID: "991"
     volumes:
-      - ./synapse/data:/data
-      - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro
-      - ./synapse/log.config:/data/log.config:ro
+      - ./synapse/data:/data:rw
+      - ./synapse/homeserver.yaml:/data/homeserver.yaml:rw
+      - ./synapse/log.config:/data/log.config:rw
     networks:
       - sky0cloud-network
     expose:
