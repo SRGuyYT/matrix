@@ -6,7 +6,7 @@
 # Main Site: Matrix + Element Web
 sky0cloud.dpdns.org:80 {
     # ------------------------------
-    # 1. Matrix Discovery (MAS/OIDC)
+    # 1. Matrix Discovery
     # ------------------------------
     handle /.well-known/matrix/client {
         header Content-Type application/json
@@ -26,11 +26,9 @@ sky0cloud.dpdns.org:80 {
     }
 
     # ------------------------------
-    # 2. MAS Traffic (FIXED SYNTAX)
+    # 2. MAS Traffic (FIXED MATCHER)
     # ------------------------------
-    @mas_paths {
-        path /auth/* /account/* /re-auth/* /.well-known/openid-configuration
-    }
+    @mas_paths path /auth/* /account/* /re-auth/* /.well-known/openid-configuration
     handle @mas_paths {
         reverse_proxy http://sky0cloud-mas:8080 {
             header_up X-Forwarded-For {header.Cf-Connecting-Ip}
@@ -38,17 +36,16 @@ sky0cloud.dpdns.org:80 {
     }
 
     # ------------------------------
-    # 3. Matrix API (Synapse)
+    # 3. Matrix API (Synapse - FIXED MATCHER)
     # ------------------------------
-    handle /_matrix/* /_synapse/* {
+    @synapse_paths path /_matrix/* /_synapse/*
+    handle @synapse_paths {
         reverse_proxy http://sky0cloud-synapse:8008 {
             header_up X-Forwarded-For {header.Cf-Connecting-Ip}
             
-            # CORS cleanup
+            # CORS fix
             header_down -Access-Control-Allow-Origin
             header_down Access-Control-Allow-Origin "*"
-            header_down -Access-Control-Allow-Methods
-            header_down Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
         }
     }
 
