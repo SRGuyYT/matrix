@@ -34,9 +34,9 @@ sky0cloud.dpdns.org {
         reverse_proxy element-web:80
     }
 
+    # Simple logging (without unsupported 'roll')
     log {
-        output file /var/log/caddy/access.log {
-            roll true
-        }
+        output file /var/log/caddy/access.log
+        format single_field common_log
     }
 }
