@@ -3,28 +3,32 @@
     auto_https off
 }
 
-:80 {
+sky0cloud.dpdns.org {
     encode zstd gzip
 
-    # 1. Discovery Headers (Required for Element to find the server)
-    header /.well-known/matrix/* {
-        Content-Type "application/json; charset=utf-8"
-        Access-Control-Allow-Origin "*"
-    }
-
-    # 2. Serve the static discovery files you pulled with git
+    # Matrix well-known
     handle /.well-known/matrix/* {
         root * /var/www/matrix
         file_server
+        header Content-Type "application/json; charset=utf-8"
+        header Access-Control-Allow-Origin "*"
     }
 
-    # 3. Proxy to the Matrix Backend (Conduwuit)
+    # Continuwuity API
     handle_path /_matrix/* {
         reverse_proxy sky0cloud-continuwuity:6167
     }
 
-    # 4. Proxy to the Element Web UI
+    # Serve Element Web
     handle {
-        reverse_proxy sky0cloud-element-web:80
+        root * /app
+        try_files {path} /index.html
+        file_server
+    }
+
+    # Logging
+    log {
+        output file /var/log/caddy/access.log
+        format console
     }
 }
