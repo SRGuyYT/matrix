@@ -1,97 +1,42 @@
-services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: sky0cloud-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: synapse_user
-      POSTGRES_PASSWORD: Sky0CloudStrongDBPass
-      POSTGRES_DB: synapse
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+{
+    auto_https off
+}
 
-  redis:
-    image: redis:7-alpine
-    container_name: sky0cloud-redis
-    restart: unless-stopped
-    command: ["redis-server","--appendonly","yes"]
-    volumes:
-      - ./data/redis:/data
+# Admin panel
+admin.sky0cloud.dpdns.org {
+    reverse_proxy sky0cloud-synapse-admin:80
+}
 
-  synapse:
-    image: matrixdotorg/synapse:latest
-    container_name: sky0cloud-synapse
-    restart: unless-stopped
-    environment:
-      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-    volumes:
-      - ./data/synapse:/data
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
+# Main domain
+sky0cloud.dpdns.org {
 
-  element:
-    image: vectorim/element-web:latest
-    container_name: sky0cloud-element
-    restart: unless-stopped
-    volumes:
-      - ./data/element:/app/config
+    # Well-known client discovery
+    handle /.well-known/matrix/client {
+        respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}` 200
+        header Content-Type application/json
+    }
 
-  synapse-admin:
-    image: ghcr.io/etkecc/synapse-admin:latest
-    container_name: sky0cloud-synapse-admin
-    restart: unless-stopped
-    environment:
-      SYNAPSE_SERVER: http://sky0cloud-synapse:8008
-    depends_on:
-      - synapse
+    # Well-known server discovery
+    handle /.well-known/matrix/server {
+        respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200
+        header Content-Type application/json
+    }
 
-  coturn:
-    image: coturn/coturn:latest
-    container_name: sky0cloud-turn
-    restart: unless-stopped
-    network_mode: host
-    volumes:
-      - ./data/coturn/turnserver.conf:/etc/coturn/turnserver.conf
-    command: ["-c", "/etc/coturn/turnserver.conf"]
+    # Matrix API and federation endpoints
+    @matrix path /_matrix/* /_synapse/*
+    handle @matrix {
+        reverse_proxy sky0cloud-synapse:8008
+        header Access-Control-Allow-Origin *
+        header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        header Access-Control-Allow-Headers *
+    }
 
-  postgres-backup:
-    image: prodrigestivill/postgres-backup-local
-    container_name: sky0cloud-postgres-backup
-    restart: unless-stopped
-    environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: synapse
-      POSTGRES_USER: synapse_user
-      POSTGRES_PASSWORD: Sky0CloudStrongDBPass
-      SCHEDULE: "@daily"
-    volumes:
-      - ./backup:/backups
-    depends_on:
-      - postgres
+    # TURN/STUN endpoints (optional if accessed via WebRTC directly)
+    @turn path /turn
+    handle @turn {
+        reverse_proxy coturn.sky0cloud.dpdns.org:3478
+    }
 
-  caddy:
-    image: caddy:2-alpine
-    container_name: sky0cloud-caddy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./data/caddy:/data
-      - ./data/caddy_config:/config
-    depends_on:
-      - synapse
-      - element
-
-volumes:
-  postgres_data: {}
+    # Everything else → Element Web
+    reverse_proxy sky0cloud-element:80
+}
