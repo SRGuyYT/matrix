@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -29,9 +31,9 @@ services:
     restart: unless-stopped
     environment:
       SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      SYNAPSE_CONFIG_PATH: /data/synapse/homeserver.yaml
     volumes:
-      - ./data:/data
+      - ./data/synapse:/data
     depends_on:
       postgres:
         condition: service_healthy
@@ -59,6 +61,8 @@ services:
     container_name: sky0cloud-turn
     restart: unless-stopped
     network_mode: host
+    volumes:
+      - ./data/coturn:/etc/coturn
     command: >
       -n
       --log-file=stdout
@@ -96,7 +100,7 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./data/caddy:/data
-      - ./config:/config
+      - ./data/caddy_config:/config
     depends_on:
       - synapse
       - element
