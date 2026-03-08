@@ -61,8 +61,8 @@ server_notices:
   room_name: "Sky0Cloud Server Notices"
 
 turn_uris:
-  - "turn:sky0cloud.dpdns.org:3478?transport=udp"
-  - "turn:sky0cloud.dpdns.org:3478?transport=tcp"
+  - "turn:coturn.sky0cloud.dpdns.org:3478?transport=udp"
+  - "turn:coturn.sky0cloud.dpdns.org:3478?transport=tcp"
 
 turn_shared_secret: Sky0CloudTurnSecret
 turn_user_lifetime: 86400000
