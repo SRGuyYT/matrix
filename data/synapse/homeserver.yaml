@@ -58,7 +58,7 @@ auto_join_rooms:
 server_notices:
   system_mxid_localpart: "system"
   system_mxid_display_name: "Sky0Cloud Account Notice Team"
-  room_name: "Account Notice [Official]"
+  room_name: "[Official] Account Notice"
 
 turn_uris:
   - "turn:coturn.sky0cloud.dpdns.org:3478?transport=udp"
