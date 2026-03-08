@@ -8,8 +8,6 @@ services:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: "Sky@Cloud0Tho"
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
     networks:
@@ -20,6 +18,14 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: sky0cloud-redis
+    restart: unless-stopped
+    command: redis-server --save "" --appendonly no
+    networks:
+      - matrix_network
+
   synapse:
     image: matrixdotorg/synapse:latest
     container_name: sky0cloud-synapse
@@ -27,32 +33,51 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-      PYTHONIOENCODING: utf-8
     volumes:
       - ./synapse/data:/data
     networks:
       - matrix_network
     expose:
       - "8008"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8008/_matrix/client/versions"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+
+  synapse-federation-worker:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse-federation-worker
+    restart: unless-stopped
+    environment:
+      SYNAPSE_WORKER: federation
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+    volumes:
+      - ./synapse/data:/data
+    networks:
+      - matrix_network
+    expose:
+      - "8008"
+
+  synapse-client-worker:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse-client-worker
+    restart: unless-stopped
+    environment:
+      SYNAPSE_WORKER: client
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+    volumes:
+      - ./synapse/data:/data
+    networks:
+      - matrix_network
+    expose:
+      - "8008"
 
   element-web:
     image: vectorim/element-web:latest
     container_name: sky0cloud-element-web
     restart: unless-stopped
-    depends_on:
-      synapse:
-        condition: service_started
     volumes:
       - ./element/config.json:/app/config.json:ro
-      - ./element/icon.png:/app/icon.png:ro
-      - ./element/background.jpg:/app/background.jpg:ro
     networks:
       - matrix_network
     expose:
@@ -62,9 +87,6 @@ services:
     image: ghcr.io/etkecc/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
     restart: unless-stopped
-    depends_on:
-      synapse:
-        condition: service_started
     environment:
       BASE_URL: https://sky0cloud.dpdns.org
     networks:
@@ -86,10 +108,38 @@ services:
     networks:
       - matrix_network
     depends_on:
-      synapse:
-        condition: service_started
-      element-web:
-        condition: service_started
+      - synapse
+      - element-web
+
+  postgres-backup:
+    image: prodrigestivill/postgres-backup-local
+    container_name: sky0cloud-postgres-backup
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: synapse
+      POSTGRES_USER: synapse_user
+      POSTGRES_PASSWORD: "Sky@Cloud0Tho"
+      SCHEDULE: "@daily"
+      BACKUP_KEEP_DAYS: 7
+    volumes:
+      - ./postgres/backups:/backups
+    networks:
+      - matrix_network
+
+  media-cleanup:
+    image: matrixdotorg/synapse:latest
+    container_name: sky0cloud-media-cleaner
+    restart: unless-stopped
+    command: >
+      bash -c "while true; do
+      synapse-admin media delete-old --days 30;
+      sleep 86400;
+      done"
+    volumes:
+      - ./synapse/data:/data
+    networks:
+      - matrix_network
 
 networks:
   matrix_network:
