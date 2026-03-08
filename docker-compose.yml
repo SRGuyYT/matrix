@@ -29,9 +29,9 @@ services:
     restart: unless-stopped
     environment:
       SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_CONFIG_PATH: ./data/synapse/homeserver.yaml
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
     volumes:
-      - ./data/synapse:/data/synapse
+      - ./data/synapse:/data
     depends_on:
       postgres:
         condition: service_healthy
