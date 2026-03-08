@@ -43,36 +43,33 @@ services:
       - matrix_network
     expose:
       - "8008"
-
-  synapse-client-worker:
-    image: matrixdotorg/synapse:latest
-    container_name: synapse-client-worker
-    restart: unless-stopped
-    depends_on:
-      - synapse
-    environment:
-      SYNAPSE_WORKER: client
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-    volumes:
-      - ./synapse/data:/data
-    networks:
-      - matrix_network
-    expose:
-      - "8008"
+    command: ["synapse.app.homeserver", "--config-path", "/data/homeserver.yaml"]
 
   synapse-federation-worker:
     image: matrixdotorg/synapse:latest
     container_name: synapse-federation-worker
     restart: unless-stopped
-    depends_on:
-      - synapse
     environment:
-      SYNAPSE_WORKER: federation
       SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
     volumes:
       - ./synapse/data:/data
     networks:
       - matrix_network
+    command: ["synapse.app.homeserver", "-m", "federation", "--config-path", "/data/homeserver.yaml"]
+    expose:
+      - "8008"
+
+  synapse-client-worker:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse-client-worker
+    restart: unless-stopped
+    environment:
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+    volumes:
+      - ./synapse/data:/data
+    networks:
+      - matrix_network
+    command: ["synapse.app.homeserver", "-m", "client", "--config-path", "/data/homeserver.yaml"]
     expose:
       - "8008"
 
@@ -91,8 +88,6 @@ services:
     image: ghcr.io/etkecc/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
     restart: unless-stopped
-    depends_on:
-      - synapse
     environment:
       BASE_URL: https://sky0cloud.dpdns.org
     networks:
@@ -122,7 +117,7 @@ services:
     container_name: sky0cloud-postgres-backup
     restart: unless-stopped
     environment:
-      POSTGRES_HOST: sky0cloud-postgres
+      POSTGRES_HOST: postgres
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: "Sky@Cloud0Tho"
@@ -138,16 +133,14 @@ services:
     container_name: sky0cloud-media-cleaner
     restart: unless-stopped
     command: >
-      bash -c "while true; do
-      python -m synapse.app.media_repository --config-path /data/homeserver.yaml --delete-old-media 30;
+      sh -c "while true; do
+      synapse-admin media delete-old --days 30;
       sleep 86400;
       done"
     volumes:
       - ./synapse/data:/data
     networks:
       - matrix_network
-    depends_on:
-      - synapse
 
 networks:
   matrix_network:
