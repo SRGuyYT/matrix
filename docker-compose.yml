@@ -1,31 +1,34 @@
+version: "3.9"
+
 services:
-  sky0cloud-postgres:
+
+  postgres:
     image: postgres:16-alpine
-    container_name: sky0cloud-postgres
+    container_name: matrix-postgres
     restart: always
     environment:
-      POSTGRES_USER: synapse_user
-      POSTGRES_PASSWORD: "Sky@Cloud0Tho"
+      POSTGRES_USER: synapse
+      POSTGRES_PASSWORD: StrongMatrixPassword
       POSTGRES_DB: synapse
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U synapse_user"]
+      test: ["CMD-SHELL", "pg_isready -U synapse -d synapse"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  sky0cloud-redis:
+  redis:
     image: redis:7-alpine
-    container_name: sky0cloud-redis
+    container_name: matrix-redis
     restart: always
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - ./data/redis:/data
 
-  sky0cloud-synapse:
+  synapse:
     image: matrixdotorg/synapse:latest
-    container_name: sky0cloud-synapse
+    container_name: matrix-synapse
     restart: always
     environment:
       SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
@@ -33,115 +36,38 @@ services:
     volumes:
       - ./data:/data
     depends_on:
-      - sky0cloud-postgres
-      - sky0cloud-redis
+      - postgres
+      - redis
 
-  synapse-generic-worker:
-    image: matrixdotorg/synapse:latest
-    container_name: synapse-generic-worker
-    restart: always
-    environment:
-      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-      SYNAPSE_WORKER: synapse.app.generic_worker
-    volumes:
-      - ./data:/data
-    depends_on:
-      - sky0cloud-postgres
-      - sky0cloud-redis
-
-  synapse-client-worker:
-    image: matrixdotorg/synapse:latest
-    container_name: synapse-client-worker
-    restart: always
-    environment:
-      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-      SYNAPSE_WORKER: synapse.app.client_reader
-    volumes:
-      - ./data:/data
-    depends_on:
-      - sky0cloud-postgres
-      - sky0cloud-redis
-
-  synapse-federation-worker:
-    image: matrixdotorg/synapse:latest
-    container_name: synapse-federation-worker
-    restart: always
-    environment:
-      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-      SYNAPSE_WORKER: synapse.app.federation_reader
-    volumes:
-      - ./data:/data
-    depends_on:
-      - sky0cloud-postgres
-      - sky0cloud-redis
-
-  sky0cloud-media-cleaner:
-    image: matrixdotorg/synapse:latest
-    container_name: sky0cloud-media-cleaner
-    restart: always
-    environment:
-      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-      SYNAPSE_WORKER: synapse.app.media_repository
-    volumes:
-      - ./data:/data
-    depends_on:
-      - sky0cloud-postgres
-      - sky0cloud-redis
-
-  sky0cloud-synapse-admin:
-    image: ghcr.io/etkecc/synapse-admin:latest
-    container_name: sky0cloud-synapse-admin
-    restart: always
-    environment:
-      SYNAPSE_SERVER: http://sky0cloud-synapse:8008
-    depends_on:
-      - sky0cloud-synapse
-
-  sky0cloud-element-web:
+  element:
     image: vectorim/element-web:latest
-    container_name: sky0cloud-element-web
+    container_name: matrix-element
     restart: always
-    environment:
-      DEFAULT_SERVER_CONFIG: |
-        {
-          "m.homeserver": {
-            "base_url": "https://sky0cloud.dpdns.org",
-            "server_name": "sky0cloud.dpdns.org"
-          }
-        }
-    volumes:
-      - ./data/element-web:/app/config
     ports:
       - "8090:80"
-    depends_on:
-      - sky0cloud-synapse
-
-  sky0cloud-caddy:
-    image: caddy:2-alpine
-    container_name: sky0cloud-caddy
-    restart: always
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./data/caddy:/data
-      - ./config/caddy:/config
+      - ./data/element:/app/config
+
+  synapse-admin:
+    image: ghcr.io/etkecc/synapse-admin:latest
+    container_name: matrix-admin
+    restart: always
+    environment:
+      SYNAPSE_SERVER: http://synapse:8008
+    depends_on:
+      - synapse
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: matrix-caddy
+    restart: always
     ports:
       - "80:80"
       - "443:443"
-
-  sky0cloud-postgres-backup:
-    image: prodrigestivill/postgres-backup-local
-    container_name: sky0cloud-postgres-backup
-    restart: always
-    environment:
-      POSTGRES_HOST: sky0cloud-postgres
-      POSTGRES_USER: synapse_user
-      POSTGRES_PASSWORD: "Sky@Cloud0Tho"
-      POSTGRES_DB: synapse
     volumes:
-      - ./backup:/backup
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data/caddy:/data
+      - ./config:/config
     depends_on:
-      - sky0cloud-postgres
+      - synapse
+      - element
