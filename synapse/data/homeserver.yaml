@@ -66,6 +66,8 @@ form_secret: "538aef9fc03da17410a71d57bca5c5383db6784db2b40a8d07b208f01bf2f2629a
 auto_join_rooms:
   - "#general:sky0cloud.dpdns.org"
   - "#info:sky0cloud.dpdns.org"
+trusted_key_servers:
+  - server_name: "matrix.org"
 
 ## --- FEDERATION PERFORMANCE --- ##
 federation:
