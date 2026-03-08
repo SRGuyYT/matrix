@@ -1,22 +1,12 @@
-# Homeserver identity
 server_name: "sky0cloud.dpdns.org"
 public_baseurl: "https://sky0cloud.dpdns.org/"
 
-# Process management
 pid_file: /data/homeserver.pid
 signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 
-# Reporting
 report_stats: true
 suppress_key_server_warning: true
 
-# Storage
-media_store_path: "/data/media_store"
-uploads_path: "/data/uploads"
-max_upload_size: 100M
-max_image_pixels: 32M
-
-# Listener (behind Caddy reverse proxy)
 listeners:
   - port: 8008
     tls: false
@@ -27,103 +17,55 @@ listeners:
       - names: [client, federation]
         compress: true
 
-# PostgreSQL database
 database:
   name: psycopg2
   args:
     user: synapse_user
-    password: "Sky@Cloud0Tho"
+    password: Sky0CloudStrongDBPass
     dbname: synapse
-    host: sky0cloud-postgres
+    host: postgres
     port: 5432
     cp_min: 5
     cp_max: 15
-    allow_unsafe_locale: true
 
-# Redis cache
 redis:
   enabled: true
-  host: sky0cloud-redis
+  host: redis
   port: 6379
 
-# Registration
+media_store_path: /data/media_store
+uploads_path: /data/uploads
+max_upload_size: 100M
+
 enable_registration: true
 registration_requires_token: true
-registration_shared_secret: "itoldyou"
+registration_shared_secret: Sky0CloudInviteSecret
+
 allow_guest_access: false
 
-# Reverse proxy trust
-trusted_proxies:
-  - "127.0.0.1"
-  - "172.16.0.0/12"
-  - "10.0.0.0/8"
+trusted_key_servers:
+  - server_name: matrix.org
 
-# Secrets
-macaroon_secret_key: "23dc71ec52cc8e18dc0afbf1df20f0d53b471377321d4ae664afa511f3919a71de5466e6432a95d8e48d47b2be17099536fc6d83512a08b984746be3f1324c5b"
-form_secret: "538aef9fc03da17410a71d57bca5c5383db6784db2b40a8d07b208f01bf2f2629abcbe68d424a976c5664fc66ceef4e4a76440ff13c77822c814489f19621bfd"
-
-# Server notices
-server_notices:
-  system_mxid_localpart: "system"
-  system_mxid_display_name: "System Administrator"
-  room_name: "Server Notice"
-
-# Auto-join rooms
 auto_join_rooms:
   - "#general:sky0cloud.dpdns.org"
-  - "#info:sky0cloud.dpdns.org"
+  - "#announcements:sky0cloud.dpdns.org"
 
-# Trusted key servers
-trusted_key_servers:
-  - server_name: "matrix.org"
+server_notices:
+  system_mxid_localpart: "system"
+  system_mxid_display_name: "Sky0Cloud System"
+  room_name: "Sky0Cloud Server Notices"
 
-# Federation tuning
-federation:
-  client_timeout: 60s
-  max_long_retry_delay: 60s
+turn_uris:
+  - "turn:sky0cloud.dpdns.org:3478?transport=udp"
+  - "turn:sky0cloud.dpdns.org:3478?transport=tcp"
 
-rc_federation:
-  window_size: 1000
-  sleep_limit: 10
-  sleep_delay: 500
-  reject_limit: 50
-  concurrent: 12
+turn_shared_secret: Sky0CloudTurnSecret
+turn_user_lifetime: 86400000
+turn_allow_guests: false
 
-# Large room protection
-limit_remote_rooms:
-  enabled: false
-
-# Experimental features
-experimental_features:
-  faster_joins: true
-  msc2654_enabled: true
-
-# Room directory
-allow_public_rooms_over_federation: true
-allow_public_rooms_without_auth: true
-
-room_list_publication_rules:
-  - user_id: "@system:sky0cloud.dpdns.org"
-    alias: "*"
-    action: "allow"
-
-# Cache tuning
 caches:
   global_factor: 1.5
 
-event_cache_size: 200K
-
-background_updates:
-  background_update_duration_ms: 100
-
-# Rate limiting
 rc_message:
   per_second: 0.5
   burst_count: 30
-
-# Retention policy
-retention:
-  enabled: true
-  default_policy:
-    min_lifetime: 1d
-    max_lifetime: 365d
