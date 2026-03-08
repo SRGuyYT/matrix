@@ -36,15 +36,20 @@ redis:
 media_store_path: /data/media_store
 uploads_path: /data/uploads
 max_upload_size: 100M
+max_image_pixels: 32M
 
 enable_registration: true
 registration_requires_token: true
 registration_shared_secret: Sky0CloudInviteSecret
-
 allow_guest_access: false
 
+trusted_proxies:
+  - "127.0.0.1"
+  - "172.16.0.0/12"
+  - "10.0.0.0/8"
+
 trusted_key_servers:
-  - server_name: matrix.org
+  - server_name: "matrix.org"
 
 auto_join_rooms:
   - "#general:sky0cloud.dpdns.org"
@@ -63,9 +68,32 @@ turn_shared_secret: Sky0CloudTurnSecret
 turn_user_lifetime: 86400000
 turn_allow_guests: false
 
-caches:
-  global_factor: 1.5
+federation:
+  client_timeout: 60s
+  max_long_retry_delay: 60s
 
 rc_message:
   per_second: 0.5
   burst_count: 30
+
+rc_login:
+  address:
+    per_second: 0.17
+    burst_count: 3
+
+rc_registration:
+  per_second: 0.17
+  burst_count: 3
+
+caches:
+  global_factor: 1.5
+
+event_cache_size: 200K
+
+allow_public_rooms_over_federation: true
+allow_public_rooms_without_auth: true
+
+room_list_publication_rules:
+  - user_id: "@system:sky0cloud.dpdns.org"
+    alias: "*"
+    action: "allow"
