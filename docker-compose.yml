@@ -3,7 +3,7 @@ services:
     image: postgres:16-alpine
     container_name: sky0cloud-postgres
     restart: unless-stopped
-    shm_size: '256mb'
+    shm_size: 256mb
     environment:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
@@ -13,10 +13,10 @@ services:
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
     networks:
-      - sky0cloud-network
+      - matrix_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
 
@@ -33,22 +33,28 @@ services:
     volumes:
       - ./synapse/data:/data
     networks:
-      - sky0cloud-network
+      - matrix_network
     expose:
       - "8008"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8008/_matrix/client/versions"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   element-web:
     image: vectorim/element-web:latest
     container_name: sky0cloud-element-web
     restart: unless-stopped
     depends_on:
-      - synapse
+      synapse:
+        condition: service_started
     volumes:
-      - ./element/config.json:/app/config.json
-      - ./element/icon.png:/app/icon.png
-      - ./element/background.jpg:/app/background.jpg
+      - ./element/config.json:/app/config.json:ro
+      - ./element/icon.png:/app/icon.png:ro
+      - ./element/background.jpg:/app/background.jpg:ro
     networks:
-      - sky0cloud-network
+      - matrix_network
     expose:
       - "80"
 
@@ -57,11 +63,12 @@ services:
     container_name: sky0cloud-synapse-admin
     restart: unless-stopped
     depends_on:
-      - synapse
+      synapse:
+        condition: service_started
     environment:
-      - BASE_URL=https://sky0cloud.dpdns.org
+      BASE_URL: https://sky0cloud.dpdns.org
     networks:
-      - sky0cloud-network
+      - matrix_network
     expose:
       - "80"
 
@@ -72,20 +79,20 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8448:8448"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     networks:
-      - sky0cloud-network
+      - matrix_network
     depends_on:
-      - synapse
-      - element-web
+      synapse:
+        condition: service_started
+      element-web:
+        condition: service_started
 
 networks:
-  sky0cloud-network:
-    name: matrix_network
+  matrix_network:
     driver: bridge
 
 volumes:
