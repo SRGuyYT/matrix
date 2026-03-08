@@ -2,31 +2,39 @@
     auto_https off
 }
 
+# Admin panel
 admin.sky0cloud.dpdns.org {
     reverse_proxy sky0cloud-synapse-admin:80
 }
 
+# Main Synapse + Element server
 sky0cloud.dpdns.org {
 
+    # CORS headers for Matrix clients
     header {
         Access-Control-Allow-Origin *
         Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
         Access-Control-Allow-Headers *
     }
 
+    # Well-known client configuration
     handle /.well-known/matrix/client {
-        header Content-Type application/json
-        respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}`
+        respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}` 200 {
+            header Content-Type application/json
+        }
     }
 
+    # Well-known server configuration
     handle /.well-known/matrix/server {
-        header Content-Type application/json
-        respond `{"m.server":"sky0cloud.dpdns.org:443"}`
+        respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200 {
+            header Content-Type application/json
+        }
     }
 
+    # Proxy Matrix API requests to Synapse
     @matrix path /_matrix/* /_synapse/*
-
     reverse_proxy @matrix sky0cloud-synapse:8008
 
+    # All other requests go to Element Web
     reverse_proxy sky0cloud-element:80
 }
