@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   sky0cloud-postgres:
     image: postgres:16-alpine
@@ -21,9 +19,7 @@ services:
     image: redis:7-alpine
     container_name: sky0cloud-redis
     restart: always
-    command: ["redis-server", "--appendonly", "yes"]
-    sysctls:
-      vm.overcommit_memory: 1
+    command: ["redis-server", "--appendonly", "yes", "--overcommit-memory", "1"]
     volumes:
       - ./data/redis:/data
     ports:
@@ -41,6 +37,7 @@ services:
     depends_on:
       - sky0cloud-postgres
       - sky0cloud-redis
+    command: ["python3", "-m", "synapse.app.homeserver", "--config-path", "/data/homeserver.yaml"]
 
   synapse-client-worker:
     image: matrixdotorg/synapse:latest
@@ -54,6 +51,7 @@ services:
     depends_on:
       - sky0cloud-postgres
       - sky0cloud-redis
+    command: ["python3", "-m", "synapse.app.client_worker", "--config-path", "/data/homeserver.yaml"]
 
   synapse-federation-worker:
     image: matrixdotorg/synapse:latest
@@ -67,6 +65,7 @@ services:
     depends_on:
       - sky0cloud-postgres
       - sky0cloud-redis
+    command: ["python3", "-m", "synapse.app.federation_worker", "--config-path", "/data/homeserver.yaml"]
 
   sky0cloud-media-cleaner:
     image: matrixdotorg/synapse:latest
@@ -80,6 +79,7 @@ services:
     depends_on:
       - sky0cloud-postgres
       - sky0cloud-redis
+    command: ["python3", "-m", "synapse.app.media_repository", "--config-path", "/data/homeserver.yaml"]
 
   sky0cloud-synapse-admin:
     image: ghcr.io/etkecc/synapse-admin:latest
