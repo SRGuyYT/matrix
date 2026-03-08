@@ -1,142 +1,131 @@
+version: "3.9"
+
 services:
-  postgres:
+  sky0cloud-postgres:
     image: postgres:16-alpine
     container_name: sky0cloud-postgres
-    restart: unless-stopped
+    restart: always
     environment:
-      POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: "Sky@Cloud0Tho"
+      POSTGRES_DB: synapse
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
-    networks:
-      - matrix_network
+      - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse"]
+      test: ["CMD-SHELL", "pg_isready -U synapse_user"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  redis:
+  sky0cloud-redis:
     image: redis:7-alpine
     container_name: sky0cloud-redis
-    restart: unless-stopped
-    command: redis-server --save "" --appendonly no
-    networks:
-      - matrix_network
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    sysctls:
+      vm.overcommit_memory: 1
+    volumes:
+      - ./data/redis:/data
+    ports:
+      - "6379:6379"
 
-  synapse:
+  sky0cloud-synapse:
     image: matrixdotorg/synapse:latest
     container_name: sky0cloud-synapse
-    restart: unless-stopped
+    restart: always
+    environment:
+      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
+      SYNAPSE_REPORT_STATS: "yes"
+    volumes:
+      - ./data/homeserver:/data
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    environment:
-      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_REPORT_STATS: "yes"
-    volumes:
-      - ./synapse/data:/data
-    networks:
-      - matrix_network
-
-  synapse-federation-worker:
-    image: matrixdotorg/synapse:latest
-    container_name: synapse-federation-worker
-    restart: unless-stopped
-    environment:
-      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_REPORT_STATS: "yes"
-    volumes:
-      - ./synapse/data:/data
-    networks:
-      - matrix_network
-    command: ["-m", "synapse.app.federation"]
+      - sky0cloud-postgres
+      - sky0cloud-redis
 
   synapse-client-worker:
     image: matrixdotorg/synapse:latest
     container_name: synapse-client-worker
-    restart: unless-stopped
+    restart: always
     environment:
       SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
       SYNAPSE_REPORT_STATS: "yes"
     volumes:
-      - ./synapse/data:/data
-    networks:
-      - matrix_network
-    command: ["-m", "synapse.app.client"]
+      - ./data/homeserver:/data
+    depends_on:
+      - sky0cloud-postgres
+      - sky0cloud-redis
 
-  element-web:
-    image: vectorim/element-web:latest
-    container_name: sky0cloud-element-web
-    restart: unless-stopped
+  synapse-federation-worker:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse-federation-worker
+    restart: always
+    environment:
+      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
+      SYNAPSE_REPORT_STATS: "yes"
     volumes:
-      - ./element/config.json:/app/config.json:ro
-    networks:
-      - matrix_network
-    expose:
-      - "80"
+      - ./data/homeserver:/data
+    depends_on:
+      - sky0cloud-postgres
+      - sky0cloud-redis
 
-  synapse-admin:
+  sky0cloud-media-cleaner:
+    image: matrixdotorg/synapse:latest
+    container_name: sky0cloud-media-cleaner
+    restart: always
+    environment:
+      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
+      SYNAPSE_REPORT_STATS: "yes"
+    volumes:
+      - ./data/homeserver:/data
+    depends_on:
+      - sky0cloud-postgres
+      - sky0cloud-redis
+
+  sky0cloud-synapse-admin:
     image: ghcr.io/etkecc/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
-    restart: unless-stopped
+    restart: always
     environment:
-      BASE_URL: https://sky0cloud.dpdns.org
-    networks:
-      - matrix_network
-    expose:
-      - "80"
+      SYNAPSE_ADMIN_USER: admin
+      SYNAPSE_ADMIN_PASSWORD: adminpass
+      SYNAPSE_SERVER: http://sky0cloud-synapse:8008
+    depends_on:
+      - sky0cloud-synapse
 
-  caddy:
+  sky0cloud-element-web:
+    image: vectorim/element-web:latest
+    container_name: sky0cloud-element-web
+    restart: always
+    environment:
+      DEFAULT_SERVER_URL: "https://sky0cloud.dpdns.org"
+    volumes:
+      - ./data/element-web:/app/config
+    ports:
+      - "8080:80"
+    depends_on:
+      - sky0cloud-synapse
+
+  sky0cloud-caddy:
     image: caddy:2-alpine
     container_name: sky0cloud-caddy
-    restart: unless-stopped
+    restart: always
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data/caddy:/data
+      - ./config/caddy:/config
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    networks:
-      - matrix_network
-    depends_on:
-      - synapse
-      - element-web
 
-  postgres-backup:
+  sky0cloud-postgres-backup:
     image: prodrigestivill/postgres-backup-local
     container_name: sky0cloud-postgres-backup
-    restart: unless-stopped
+    restart: always
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: "Sky@Cloud0Tho"
-      SCHEDULE: "@daily"
-      BACKUP_KEEP_DAYS: 7
+      POSTGRES_DB: synapse
     volumes:
-      - ./postgres/backups:/backups
-    networks:
-      - matrix_network
-
-  media-cleanup:
-    image: matrixdotorg/synapse:latest
-    container_name: sky0cloud-media-cleaner
-    restart: unless-stopped
-    volumes:
-      - ./synapse/data:/data
-    networks:
-      - matrix_network
-    command: ["-m", "synapse.app.media_repository", "--cleanup"]
-
-networks:
-  matrix_network:
-    driver: bridge
-
-volumes:
-  caddy_data:
-  caddy_config:
+      - ./backup:/backup
+    depends_on:
+      - sky0cloud-postgres
