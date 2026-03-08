@@ -72,7 +72,8 @@ federation:
   client_timeout: 60s
   max_long_retry_delay: 60s
 
-federation_sender_instances: 1
+federation_sender_instances:
+  - synapse
 
 rc_federation:
   window_size: 1000
