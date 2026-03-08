@@ -21,34 +21,27 @@ sky0cloud.dpdns.org:80 {
 
     # Matrix discovery
     handle /.well-known/matrix/client {
-        respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}` 200 {
-            header Content-Type application/json
-        }
+        header Content-Type application/json
+        respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}`
     }
 
     handle /.well-known/matrix/server {
-        respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200 {
-            header Content-Type application/json
-        }
+        header Content-Type application/json
+        respond `{"m.server":"sky0cloud.dpdns.org:443"}`
     }
 
     # Matrix API paths
     @matrix path /_matrix/* /_synapse/* /_admin/*
 
-    reverse_proxy @matrix {
-        to sky0cloud-synapse:8008 synapse-client-worker:8008 synapse-federation-worker:8008
+    reverse_proxy @matrix sky0cloud-synapse:8008 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
-
-        # Remove CORS headers from upstream to avoid conflicts
         header_down -Access-Control-Allow-Origin
         header_down -Access-Control-Allow-Methods
         header_down -Access-Control-Allow-Headers
     }
 
-    # Element web client (fallback)
-    reverse_proxy / {
-        to sky0cloud-element-web:80
-    }
+    # Element web client
+    reverse_proxy sky0cloud-element-web:80
 }
