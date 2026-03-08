@@ -60,18 +60,8 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./data/coturn:/etc/coturn
-    command: >
-      -n
-      --log-file=stdout
-      --realm=sky0cloud.dpdns.org
-      --use-auth-secret
-      --static-auth-secret=Sky0CloudTurnSecret
-      --fingerprint
-      --total-quota=100
-      --bps-capacity=0
-      --stale-nonce
-      --no-multicast-peers
+      - ./data/coturn/turnserver.conf:/etc/coturn/turnserver.conf
+    command: ["-c", "/etc/coturn/turnserver.conf"]
 
   postgres-backup:
     image: prodrigestivill/postgres-backup-local
