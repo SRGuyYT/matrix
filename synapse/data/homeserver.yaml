@@ -38,7 +38,7 @@ database:
     port: 5432
     cp_min: 5
     cp_max: 15
-    allow_unsafe_locale: true
+    allow_unsafe_locale: true   # fixes PostgreSQL collation issue
 
 # Redis (for workers & caching)
 redis:
@@ -87,7 +87,7 @@ rc_federation:
   sleep_limit: 10
   sleep_delay: 500
   reject_limit: 50
-  concurrent: 12     # improved for larger rooms
+  concurrent: 12
 
 # Large room protection
 limit_remote_rooms:
@@ -96,7 +96,7 @@ limit_remote_rooms:
 # Experimental features
 experimental_features:
   faster_joins: true
-  msc2654_enabled: true     # optional, improves sync performance
+  msc2654_enabled: true
 
 # Room directory
 allow_public_rooms_over_federation: true
@@ -124,3 +124,12 @@ retention:
   default_policy:
     min_lifetime: 1d
     max_lifetime: 365d
+
+# Workers
+worker_app:
+  - name: synapse.app.generic_worker
+    config:
+      worker_listen_port: 9090
+      worker_pid_file: "/data/generic_worker.pid"
+      redis_host: sky0cloud-redis
+      redis_port: 6379
