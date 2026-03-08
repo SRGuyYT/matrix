@@ -5,6 +5,9 @@
     "m.homeserver": {
       "base_url": "https://sky0cloud.dpdns.org",
       "server_name": "sky0cloud.dpdns.org"
+    },
+    "m.identity_server": {
+      "base_url": "https://vector.im"
     }
   },
   "room_directory": {
@@ -21,5 +24,15 @@
   "default_theme": "dark",
   "branding": {
     "authHeaderLogoUrl": "icon.png"
+  },
+  "webrtc": {
+    "preferredCodec": "VP8",
+    "turnServers": [
+      {
+        "urls": ["turn:sky0cloud.dpdns.org:3478?transport=udp", "turn:sky0cloud.dpdns.org:3478?transport=tcp"],
+        "username": "sky0cloud_turn_user",
+        "credential": "Sky0CloudTurnSecret"
+      }
+    ]
   }
 }
