@@ -5,12 +5,18 @@
 
 # Synapse Admin UI
 matrix.sky0cloud.dpdns.org:80 {
-    reverse_proxy sky0cloud-synapse-admin:8080
+    reverse_proxy sky0cloud-synapse-admin:80
 }
 
-# Main Site: Matrix + Element Web
+# Matrix federation endpoint
+sky0cloud.dpdns.org:8448 {
+    reverse_proxy sky0cloud-synapse:8008
+}
+
+# Main site: Element + Matrix
 sky0cloud.dpdns.org:80 {
-    # 1. Broad CORS policy for the entire domain
+
+    # Global CORS policy (kept exactly like you wanted)
     header {
         Access-Control-Allow-Origin *
         Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
@@ -18,33 +24,33 @@ sky0cloud.dpdns.org:80 {
         Access-Control-Expose-Headers "Content-Length, X-Matrix-User-ID"
     }
 
-    # 2. Matrix Discovery (.well-known)
+    # Matrix discovery
     handle /.well-known/matrix/client {
         header Content-Type application/json
-        respond `{"m.homeserver": {"base_url": "https://sky0cloud.dpdns.org"}}` 200
+        respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}` 200
     }
 
     handle /.well-known/matrix/server {
         header Content-Type application/json
-        respond `{"m.server":"sky0cloud.dpdns.org"}` 200
+        respond `{"m.server":"sky0cloud.dpdns.org:8448"}` 200
     }
 
-    # 3. Matrix API + Admin API + Media
+    # Matrix API routes
     @synapse_paths path /_matrix/* /_synapse/* /_admin/*
     handle @synapse_paths {
         reverse_proxy http://sky0cloud-synapse:8008 {
             header_up Host {host}
             header_up X-Real-IP {remote_host}
-            header_up X-Forwarded-For {header.Cf-Connecting-Ip}
+            header_up X-Forwarded-For {remote_host}
 
-            # STRIP DUPLICATES: Deletes container headers so only Caddy's are sent
+            # prevent duplicate CORS headers from Synapse
             header_down -Access-Control-Allow-Origin
             header_down -Access-Control-Allow-Methods
             header_down -Access-Control-Allow-Headers
         }
     }
 
-    # 4. Element Web Client
+    # Element web client
     handle {
         reverse_proxy http://sky0cloud-element-web:80
     }
