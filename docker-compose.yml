@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: Sky0CloudStrongDBPass
       POSTGRES_DB: synapse
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse"]
       interval: 10s
@@ -92,3 +92,6 @@ services:
     depends_on:
       - synapse
       - element
+
+volumes:
+  postgres_data: {}
