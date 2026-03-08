@@ -42,9 +42,10 @@ services:
     restart: always
     environment:
       SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_REPORT_STATS: "yes"
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      SYNAPSE_WORKER: synapse.app.generic_worker
     volumes:
-      - ./data/homeserver:/data
+      - ./data:/data
     depends_on:
       - sky0cloud-postgres
       - sky0cloud-redis
@@ -55,9 +56,10 @@ services:
     restart: always
     environment:
       SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_REPORT_STATS: "yes"
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      SYNAPSE_WORKER: synapse.app.client_reader
     volumes:
-      - ./data/homeserver:/data
+      - ./data:/data
     depends_on:
       - sky0cloud-postgres
       - sky0cloud-redis
@@ -68,9 +70,10 @@ services:
     restart: always
     environment:
       SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_REPORT_STATS: "yes"
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      SYNAPSE_WORKER: synapse.app.federation_reader
     volumes:
-      - ./data/homeserver:/data
+      - ./data:/data
     depends_on:
       - sky0cloud-postgres
       - sky0cloud-redis
@@ -81,9 +84,10 @@ services:
     restart: always
     environment:
       SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_REPORT_STATS: "yes"
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      SYNAPSE_WORKER: synapse.app.media_repository
     volumes:
-      - ./data/homeserver:/data
+      - ./data:/data
     depends_on:
       - sky0cloud-postgres
       - sky0cloud-redis
@@ -93,8 +97,6 @@ services:
     container_name: sky0cloud-synapse-admin
     restart: always
     environment:
-      SYNAPSE_ADMIN_USER: admin
-      SYNAPSE_ADMIN_PASSWORD: adminpass
       SYNAPSE_SERVER: http://sky0cloud-synapse:8008
     depends_on:
       - sky0cloud-synapse
@@ -104,11 +106,17 @@ services:
     container_name: sky0cloud-element-web
     restart: always
     environment:
-      DEFAULT_SERVER_URL: "https://sky0cloud.dpdns.org"
+      DEFAULT_SERVER_CONFIG: |
+        {
+          "m.homeserver": {
+            "base_url": "https://sky0cloud.dpdns.org",
+            "server_name": "sky0cloud.dpdns.org"
+          }
+        }
     volumes:
       - ./data/element-web:/app/config
     ports:
-      - "8090:80"   # changed from 8080 to 8090
+      - "8090:80"
     depends_on:
       - sky0cloud-synapse
 
@@ -129,6 +137,7 @@ services:
     container_name: sky0cloud-postgres-backup
     restart: always
     environment:
+      POSTGRES_HOST: sky0cloud-postgres
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: "Sky@Cloud0Tho"
       POSTGRES_DB: synapse
