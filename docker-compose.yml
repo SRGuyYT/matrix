@@ -3,7 +3,6 @@ services:
     image: postgres:16-alpine
     container_name: sky0cloud-postgres
     restart: unless-stopped
-    shm_size: 256mb
     environment:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
@@ -36,42 +35,38 @@ services:
       redis:
         condition: service_started
     environment:
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
+      SYNAPSE_REPORT_STATS: "yes"
     volumes:
       - ./synapse/data:/data
     networks:
       - matrix_network
-    expose:
-      - "8008"
-    command: ["synapse.app.homeserver", "--config-path", "/data/homeserver.yaml"]
 
   synapse-federation-worker:
     image: matrixdotorg/synapse:latest
     container_name: synapse-federation-worker
     restart: unless-stopped
     environment:
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
+      SYNAPSE_REPORT_STATS: "yes"
     volumes:
       - ./synapse/data:/data
     networks:
       - matrix_network
-    command: ["synapse.app.homeserver", "-m", "federation", "--config-path", "/data/homeserver.yaml"]
-    expose:
-      - "8008"
+    command: ["-m", "synapse.app.federation"]
 
   synapse-client-worker:
     image: matrixdotorg/synapse:latest
     container_name: synapse-client-worker
     restart: unless-stopped
     environment:
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
+      SYNAPSE_REPORT_STATS: "yes"
     volumes:
       - ./synapse/data:/data
     networks:
       - matrix_network
-    command: ["synapse.app.homeserver", "-m", "client", "--config-path", "/data/homeserver.yaml"]
-    expose:
-      - "8008"
+    command: ["-m", "synapse.app.client"]
 
   element-web:
     image: vectorim/element-web:latest
@@ -132,15 +127,11 @@ services:
     image: matrixdotorg/synapse:latest
     container_name: sky0cloud-media-cleaner
     restart: unless-stopped
-    command: >
-      sh -c "while true; do
-      synapse-admin media delete-old --days 30;
-      sleep 86400;
-      done"
     volumes:
       - ./synapse/data:/data
     networks:
       - matrix_network
+    command: ["-m", "synapse.app.media_repository", "--cleanup"]
 
 networks:
   matrix_network:
