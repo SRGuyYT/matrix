@@ -42,6 +42,6 @@ sky0cloud.dpdns.org:80 {
         header_down -Access-Control-Allow-Headers
     }
 
-    # Element web client
-    reverse_proxy sky0cloud-element-web:80
+    # Element web client (now points to port 8090)
+    reverse_proxy localhost:8090
 }
