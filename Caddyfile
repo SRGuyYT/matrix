@@ -1,43 +1,19 @@
 {
-    email chapmlinks@gmail.com
+    auto_https off
 }
 
-# Synapse Admin
 admin.sky0cloud.dpdns.org {
-
-    encode gzip
-
-    reverse_proxy sky0cloud-synapse-admin:80 {
-        header_up X-Real-IP {http.request.header.CF-Connecting-IP}
-        header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
-        header_up X-Forwarded-Proto https
-    }
-
-    header {
-        Access-Control-Allow-Origin *
-        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-        Access-Control-Allow-Headers *
-        Access-Control-Expose-Headers *
-        X-Frame-Options "ALLOWALL"
-        Content-Security-Policy "frame-ancestors *"
-    }
+    reverse_proxy sky0cloud-synapse-admin:80
 }
 
-# Main Matrix + Element domain
 sky0cloud.dpdns.org {
 
-    encode gzip
-
     header {
         Access-Control-Allow-Origin *
         Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
         Access-Control-Allow-Headers *
-        Access-Control-Expose-Headers *
-        X-Frame-Options "ALLOWALL"
-        Content-Security-Policy "frame-ancestors *"
     }
 
-    # Matrix discovery
     handle /.well-known/matrix/client {
         header Content-Type application/json
         respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}`
@@ -48,16 +24,9 @@ sky0cloud.dpdns.org {
         respond `{"m.server":"sky0cloud.dpdns.org:443"}`
     }
 
-    # Matrix API
     @matrix path /_matrix/* /_synapse/*
 
-    reverse_proxy @matrix sky0cloud-synapse:8008 {
-        header_up Host {host}
-        header_up X-Real-IP {http.request.header.CF-Connecting-IP}
-        header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
-        header_up X-Forwarded-Proto https
-    }
+    reverse_proxy @matrix sky0cloud-synapse:8008
 
-    # Element Web
     reverse_proxy sky0cloud-element:80
 }
