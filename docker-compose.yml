@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # PostgreSQL
   sky0cloud-postgres:
@@ -24,14 +22,12 @@ services:
     container_name: sky0cloud-redis
     restart: always
     command: ["redis-server", "--appendonly", "yes"]
-    sysctls:
-      vm.overcommit_memory: 1
     volumes:
       - ./data/redis:/data
     ports:
       - "6379:6379"
 
-  # Synapse main process
+  # Main Synapse server
   sky0cloud-synapse:
     image: matrixdotorg/synapse:latest
     container_name: sky0cloud-synapse
@@ -45,22 +41,63 @@ services:
       - sky0cloud-postgres
       - sky0cloud-redis
 
-  # Synapse generic worker
-  generic-worker:
+  # Synapse generic worker (background tasks)
+  synapse-generic-worker:
     image: matrixdotorg/synapse:latest
     container_name: synapse-generic-worker
     restart: always
-    environment:
-      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_REPORT_STATS: "yes"
-    command: ["synapse.app.generic_worker", "-c", "/data/homeserver.yaml"]
     volumes:
       - ./data/homeserver:/data
     depends_on:
       - sky0cloud-postgres
       - sky0cloud-redis
+    command: >
+      python3 -m synapse.app.generic_worker
+      --config-path /data/homeserver.yaml
 
-  # Synapse admin UI
+  # Client worker
+  synapse-client-worker:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse-client-worker
+    restart: always
+    volumes:
+      - ./data/homeserver:/data
+    depends_on:
+      - sky0cloud-postgres
+      - sky0cloud-redis
+    command: >
+      python3 -m synapse.app.client_worker
+      --config-path /data/homeserver.yaml
+
+  # Federation worker
+  synapse-federation-worker:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse-federation-worker
+    restart: always
+    volumes:
+      - ./data/homeserver:/data
+    depends_on:
+      - sky0cloud-postgres
+      - sky0cloud-redis
+    command: >
+      python3 -m synapse.app.federation_worker
+      --config-path /data/homeserver.yaml
+
+  # Media cleanup worker
+  sky0cloud-media-cleaner:
+    image: matrixdotorg/synapse:latest
+    container_name: sky0cloud-media-cleaner
+    restart: always
+    volumes:
+      - ./data/homeserver:/data
+    depends_on:
+      - sky0cloud-postgres
+      - sky0cloud-redis
+    command: >
+      python3 -m synapse.app.media_repository.media_cleaner
+      --config-path /data/homeserver.yaml
+
+  # Synapse Admin UI
   sky0cloud-synapse-admin:
     image: ghcr.io/etkecc/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
@@ -72,7 +109,7 @@ services:
     depends_on:
       - sky0cloud-synapse
 
-  # Element Web
+  # Element Web UI
   sky0cloud-element-web:
     image: vectorim/element-web:latest
     container_name: sky0cloud-element-web
@@ -86,7 +123,7 @@ services:
     depends_on:
       - sky0cloud-synapse
 
-  # Caddy (reverse proxy)
+  # Caddy Reverse Proxy
   sky0cloud-caddy:
     image: caddy:2-alpine
     container_name: sky0cloud-caddy
@@ -99,7 +136,7 @@ services:
       - "80:80"
       - "443:443"
 
-  # Postgres backup
+  # Postgres backup service
   sky0cloud-postgres-backup:
     image: prodrigestivill/postgres-backup-local
     container_name: sky0cloud-postgres-backup
