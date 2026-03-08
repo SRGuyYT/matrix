@@ -29,7 +29,10 @@
     "preferredCodec": "VP8",
     "turnServers": [
       {
-        "urls": ["turn:sky0cloud.dpdns.org:3478?transport=udp", "turn:sky0cloud.dpdns.org:3478?transport=tcp"],
+        "urls": [
+          "turn:coturn.sky0cloud.dpdns.org:3478?transport=udp",
+          "turn:coturn.sky0cloud.dpdns.org:3478?transport=tcp"
+        ],
         "username": "sky0cloud_turn_user",
         "credential": "Sky0CloudTurnSecret"
       }
