@@ -23,18 +23,18 @@ services:
     volumes:
       - ./data/redis:/data
 
-sky0cloud-synapse:
-  image: matrixdotorg/synapse:latest
-  container_name: sky0cloud-synapse
-  restart: always
-  environment:
-    SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-    SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-  volumes:
-    - ./data:/data
-  depends_on:
-    - sky0cloud-postgres
-    - sky0cloud-redis
+  sky0cloud-synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: sky0cloud-synapse
+    restart: always
+    environment:
+      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+    volumes:
+      - ./data:/data
+    depends_on:
+      - sky0cloud-postgres
+      - sky0cloud-redis
 
   synapse-generic-worker:
     image: matrixdotorg/synapse:latest
