@@ -88,6 +88,21 @@
   "disable_guests": false,
   "disable_login_language_selector": false,
   "disable_3pid_login": false,
+  "auth_footer_links": [
+      {
+        "text": "Login",
+        "url": "/#/login"
+      },
+      {
+        "text": "Signup",
+        "url": "/#/register"
+      },
+      {
+        "text": "Access Code",
+        "url": "/#/register?token=itoldyou"
+      }
+    ]
+  },
 
   "force_verification": false,
 
