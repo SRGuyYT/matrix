@@ -1,15 +1,39 @@
 {
     email chapmlinks@gmail.com
-    auto_https off
 }
 
-# Synapse Admin UI
+# Synapse Admin Panel
 admin.sky0cloud.dpdns.org {
-    reverse_proxy synapse-admin:80
+
+    encode gzip
+
+    reverse_proxy sky0cloud-synapse-admin:80
+
+    header {
+        Access-Control-Allow-Origin *
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers *
+        Access-Control-Expose-Headers *
+        X-Frame-Options "ALLOWALL"
+        Content-Security-Policy "frame-ancestors *"
+    }
 }
 
-# Main domain (Element + Matrix)
+# Main Sky0Cloud Matrix + Element
 sky0cloud.dpdns.org {
+
+    encode gzip
+
+    # Cloudflare + proxy headers
+    header {
+        Access-Control-Allow-Origin *
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers *
+        Access-Control-Expose-Headers *
+        X-Frame-Options "ALLOWALL"
+        Content-Security-Policy "frame-ancestors *"
+        Referrer-Policy "no-referrer-when-downgrade"
+    }
 
     # Matrix discovery
     handle /.well-known/matrix/client {
@@ -22,15 +46,16 @@ sky0cloud.dpdns.org {
         respond `{"m.server":"sky0cloud.dpdns.org:443"}`
     }
 
-    # Matrix API
+    # Matrix API routes
     @matrix path /_matrix/* /_synapse/*
 
-    reverse_proxy @matrix synapse:8008 {
+    reverse_proxy @matrix sky0cloud-synapse:8008 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
     }
 
-    # Element Web
-    reverse_proxy element:80
+    # Element Web Client
+    reverse_proxy sky0cloud-element:80
 }
