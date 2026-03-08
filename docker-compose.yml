@@ -44,12 +44,14 @@ services:
     expose:
       - "8008"
 
-  synapse-federation-worker:
+  synapse-client-worker:
     image: matrixdotorg/synapse:latest
-    container_name: synapse-federation-worker
+    container_name: synapse-client-worker
     restart: unless-stopped
+    depends_on:
+      - synapse
     environment:
-      SYNAPSE_WORKER: federation
+      SYNAPSE_WORKER: client
       SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
     volumes:
       - ./synapse/data:/data
@@ -58,12 +60,14 @@ services:
     expose:
       - "8008"
 
-  synapse-client-worker:
+  synapse-federation-worker:
     image: matrixdotorg/synapse:latest
-    container_name: synapse-client-worker
+    container_name: synapse-federation-worker
     restart: unless-stopped
+    depends_on:
+      - synapse
     environment:
-      SYNAPSE_WORKER: client
+      SYNAPSE_WORKER: federation
       SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
     volumes:
       - ./synapse/data:/data
@@ -87,6 +91,8 @@ services:
     image: ghcr.io/etkecc/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
     restart: unless-stopped
+    depends_on:
+      - synapse
     environment:
       BASE_URL: https://sky0cloud.dpdns.org
     networks:
@@ -116,7 +122,7 @@ services:
     container_name: sky0cloud-postgres-backup
     restart: unless-stopped
     environment:
-      POSTGRES_HOST: postgres
+      POSTGRES_HOST: sky0cloud-postgres
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: "Sky@Cloud0Tho"
@@ -133,13 +139,15 @@ services:
     restart: unless-stopped
     command: >
       bash -c "while true; do
-      synapse-admin media delete-old --days 30;
+      python -m synapse.app.media_repository --config-path /data/homeserver.yaml --delete-old-media 30;
       sleep 86400;
       done"
     volumes:
       - ./synapse/data:/data
     networks:
       - matrix_network
+    depends_on:
+      - synapse
 
 networks:
   matrix_network:
