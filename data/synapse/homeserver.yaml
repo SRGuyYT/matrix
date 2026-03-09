@@ -1,5 +1,5 @@
 # ==============================================================================
-# Sky0Cloud - Optimized Synapse Configuration
+# Sky0Cloud - Optimized Synapse Configuration (Fixed)
 # ==============================================================================
 
 server_name: "sky0cloud.dpdns.org"
@@ -66,7 +66,8 @@ redis:
 
 # --- Performance & Stability Tuning ---
 gc_thresholds: [700, 10, 10]
-gc_min_interval: [0.5s, 30s, 1m]
+# Durations MUST be in quotes
+gc_min_interval: ["0.5s", "30s", "1m"]
 
 limit_remote_rooms:
   enabled: true
