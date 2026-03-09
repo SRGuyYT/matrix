@@ -13,8 +13,6 @@ services:
       - ./data/postgres:/var/lib/postgresql/data
     networks:
       - matrix_network
-    ports:
-      - "8443:8443"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse"]
       interval: 10s
@@ -42,7 +40,9 @@ services:
     volumes:
       - ./data/synapse:/data
     networks:
-      - matrix_network
+      matrix_network:
+        aliases:
+          - sky0cloud-synapse
 
   element-web:
     image: vectorim/element-web:latest
@@ -66,6 +66,7 @@ services:
     container_name: sky0cloud-turn
     restart: unless-stopped
     network_mode: host
+    command: ["turnserver", "-c", "/etc/coturn/turnserver.conf"]
     volumes:
       - ./data/coturn/turnserver.conf:/etc/coturn/turnserver.conf
 
@@ -86,6 +87,3 @@ services:
 networks:
   matrix_network:
     driver: bridge
-
-volumes:
-  caddy_data:
