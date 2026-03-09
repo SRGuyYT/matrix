@@ -50,6 +50,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/element/config.json:/app/config.json
+      - ./data/element/icon.png:/app/icon.png
     networks:
       - matrix_network
 
