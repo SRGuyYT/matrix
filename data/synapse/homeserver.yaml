@@ -1,9 +1,7 @@
 server_name: "sky0cloud.dpdns.org"
 public_baseurl: "https://sky0cloud.dpdns.org/"
-
 pid_file: /data/homeserver.pid
 signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
-
 report_stats: true
 suppress_key_server_warning: true
 
@@ -36,7 +34,6 @@ redis:
 media_store_path: /data/media_store
 uploads_path: /data/uploads
 max_upload_size: 100M
-max_image_pixels: 32M
 
 enable_registration: true
 registration_requires_token: true
@@ -48,47 +45,10 @@ trusted_proxies:
   - "172.16.0.0/12"
   - "10.0.0.0/8"
 
-trusted_key_servers:
-  - server_name: "matrix.org"
-
-auto_join_rooms:
-  - "#general:sky0cloud.dpdns.org"
-  - "#announcements:sky0cloud.dpdns.org"
-
 server_notices:
   system_mxid_localpart: "system"
   system_mxid_display_name: "Sky0Cloud Account Notice Team"
   room_name: "[Official] Account Notice"
-
-turn_uris:
-  - "turn:coturn.sky0cloud.dpdns.org:3478?transport=udp"
-  - "turn:coturn.sky0cloud.dpdns.org:3478?transport=tcp"
-
-turn_shared_secret: Sky0CloudTurnSecret
-turn_user_lifetime: 86400000
-turn_allow_guests: false
-
-federation:
-  client_timeout: 60s
-  max_long_retry_delay: 60s
-
-rc_message:
-  per_second: 0.5
-  burst_count: 30
-
-rc_login:
-  address:
-    per_second: 0.17
-    burst_count: 3
-
-rc_registration:
-  per_second: 0.17
-  burst_count: 3
-
-caches:
-  global_factor: 1.5
-
-event_cache_size: 200K
 
 allow_public_rooms_over_federation: true
 allow_public_rooms_without_auth: true
