@@ -10,6 +10,11 @@
       "base_url": "https://vector.im"
     }
   },
+  "disable_custom_urls": false,
+  "disable_guests": true,
+  "disable_login_language_selector": false,
+  "disable_3pid_login": false,
+  "force_verification": false,
   "room_directory": {
     "servers": [
       "sky0cloud.dpdns.org",
@@ -19,11 +24,15 @@
   "features": {
     "threadsActivityCentre": true,
     "feature_video_rooms": true,
-    "feature_group_calls": true
+    "feature_group_calls": true,
+    "feature_element_call_video_rooms": true
   },
   "default_theme": "dark",
+  "default_country_code": "US",
+  "default_federate": true,
+  "show_labs_settings": true,
   "branding": {
-    "authHeaderLogoUrl": "icon.png"
+    "authHeaderLogoUrl": "icon.png",
   },
   "webrtc": {
     "preferredCodec": "VP8",
@@ -37,5 +46,36 @@
         "credential": "Sky0CloudTurnSecret"
       }
     ]
+  },
+  "integrations_ui_url": "https://scalar.vector.im/",
+  "integrations_rest_url": "https://scalar.vector.im/api",
+  "integrations_widgets_urls": [
+    "https://scalar.vector.im/_matrix/integrations/v1",
+    "https://scalar.vector.im/api",
+    "https://scalar-staging.vector.im/_matrix/integrations/v1",
+    "https://scalar-staging.vector.im/api"
+  ],
+  "default_widget_container_height": 280,
+  "element_call": {
+    "url": "https://call.element.io",
+    "use_exclusively": true
+  },
+  "map_style_url": "",
+  "bug_report_endpoint_url": "",
+  "piwik": false,
+  "posthog": false,
+  "privacy_policy_url": "https://sky0cloud.dpdns.org/privacy",
+  "terms_and_conditions_url": "https://sky0cloud.dpdns.org/terms",
+  "sso_redirect_options": {
+    "immediate": false,
+    "on_welcome_page": false,
+    "on_login_page": true
+  },
+  "logout_redirect_url": "/#/login",
+  "setting_defaults": {
+    "MessageComposerInput.showStickersButton": true,
+    "MessageComposerInput.showPollsButton": true,
+    "UIFeature.advancedSettings": true,
+    "UIFeature.registration": true
   }
 }
