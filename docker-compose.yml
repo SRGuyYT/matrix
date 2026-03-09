@@ -44,7 +44,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/element/config.json:/app/config.json:ro
-      - ./data/element/icon.png:/app/icon.png:ro
 
   synapse-admin:
     image: ghcr.io/etkecc/synapse-admin:latest
