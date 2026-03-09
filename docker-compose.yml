@@ -7,6 +7,8 @@ services:
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: Sky0CloudStrongDBPass
       POSTGRES_DB: synapse
+      # ADD THIS LINE BELOW:
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
@@ -63,12 +65,14 @@ services:
       - ./data/coturn/turnserver.conf:/etc/coturn/turnserver.conf
     command: ["-c", "/etc/coturn/turnserver.conf"]
 
-  postgres-backup:
+postgres-backup:
     image: prodrigestivill/postgres-backup-local
     container_name: sky0cloud-postgres-backup
     restart: unless-stopped
     environment:
-      POSTGRES_HOST: postgres
+      # CHANGED THIS: Point to the container_name "sky0cloud-postgres" 
+      # or the service name "postgres"
+      POSTGRES_HOST: sky0cloud-postgres 
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: Sky0CloudStrongDBPass
