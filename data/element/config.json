@@ -32,7 +32,7 @@
   "default_federate": true,
   "show_labs_settings": true,
   "branding": {
-    "authHeaderLogoUrl": "icon.png",
+    "authHeaderLogoUrl": "icon.png"
   },
   "webrtc": {
     "preferredCodec": "VP8",
