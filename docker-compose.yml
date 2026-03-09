@@ -47,7 +47,7 @@ services:
     container_name: sky0cloud-element-web
     restart: unless-stopped
     volumes:
-      - ./data/element:/app/config
+      - ./data/element/config.json:/app/config.json
     networks:
       - matrix_network
 
