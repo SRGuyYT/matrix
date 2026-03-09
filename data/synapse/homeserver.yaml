@@ -1,23 +1,83 @@
 server_name: "sky0cloud.dpdns.org"
 public_baseurl: "https://sky0cloud.dpdns.org/"
-registration_shared_secret: "Sky0CloudInviteSecret"
+
 pid_file: /data/homeserver.pid
 signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
+
+report_stats: true
+suppress_key_server_warning: true
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    bind_addresses: ["0.0.0.0"]
+    resources:
+      - names: [client, federation]
+        compress: true
+
+trusted_proxies:
+  - "127.0.0.1"
+  - "172.16.0.0/12"
+  - "10.0.0.0/8"
+
+ip_range_blacklist:
+  - "127.0.0.0/8"
+  - "10.0.0.0/8"
+  - "172.16.0.0/12"
+  - "192.168.0.0/16"
+  - "100.64.0.0/10"
+  - "169.254.0.0/16"
+
 database:
   name: psycopg2
   args:
     user: synapse_user
     password: "Sky0CloudStrongDBPass"
     dbname: synapse
-    host: sky0cloud-postgres
+    host: postgres
     port: 5432
-listeners:
-  - port: 8008
-    tls: false
-    type: http
-    x_forwarded: true
-    resources:
-      - names: [client, federation]
-        compress: true
+    cp_min: 5
+    cp_max: 15
+
+redis:
+  enabled: true
+  host: redis
+  port: 6379
+
 gc_thresholds: [700, 10, 10]
 gc_min_interval: ["0.5s", "30s", "1m"]
+
+limit_remote_rooms:
+  enabled: true
+  complexity: 1.0
+
+filter_timeline_limit: 5000
+
+require_auth_for_profile_requests: true
+
+# Registration settings
+enable_registration: false
+registration_requires_token: true
+registration_shared_secret: "Sky0CloudInviteSecret"
+allow_guest_access: false
+
+media_store_path: /data/media_store
+uploads_path: /data/uploads
+max_upload_size: 100M
+max_image_pixels: 32000000
+dynamic_thumbnails: true
+
+server_notices:
+  system_mxid_localpart: "system"
+  system_mxid_display_name: "Sky0Cloud Account Notice Team"
+  room_name: "[Official] Account Notice"
+
+allow_public_rooms_over_federation: true
+allow_public_rooms_without_auth: true
+
+room_list_publication_rules:
+  - user_id: "@system:sky0cloud.dpdns.org"
+    alias: "*"
+    action: "allow"
