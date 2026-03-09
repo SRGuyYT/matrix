@@ -46,12 +46,6 @@ redis:
   host: redis
   port: 6379
 
-gc_thresholds: [700, 10, 10]
-gc_min_interval:
-  - "0.5s"
-  - "30s"
-  - "1m"
-
 limit_remote_rooms:
   enabled: true
   complexity: 1.0
