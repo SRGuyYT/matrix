@@ -3,13 +3,17 @@ services:
     image: postgres:16
     container_name: sky0cloud-postgres
     restart: unless-stopped
+    shm_size: 256mb
     environment:
-      POSTGRES_USER: synapse_user
-      POSTGRES_PASSWORD: Sky0CloudStrongDBPass
       POSTGRES_DB: synapse
+      POSTGRES_USER: synapse_user
+      POSTGRES_PASSWORD: "Sky0CloudStrongDBPass"
+      PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - ./postgres/data:/var/lib/postgresql/data
+    networks:
+      - matrix_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse"]
       interval: 10s
@@ -20,35 +24,48 @@ services:
     image: redis:7-alpine
     container_name: sky0cloud-redis
     restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes"]
-    volumes:
-      - ./data/redis:/data
+    networks:
+      - matrix_network
 
   synapse:
     image: matrixdotorg/synapse:latest
     container_name: sky0cloud-synapse
     restart: unless-stopped
-    environment:
-      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
-    volumes:
-      - ./data/synapse:/data
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_started
+    environment:
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+    volumes:
+      - ./synapse/data:/data
+    networks:
+      - matrix_network
 
-  element:
+  element-web:
     image: vectorim/element-web:latest
-    container_name: sky0cloud-element
+    container_name: sky0cloud-element-web
     restart: unless-stopped
     volumes:
-      - ./data/element/config.json:/app/config.json:ro
+      - ./element/config.json:/app/config.json:ro
+    networks:
+      - matrix_network
 
   synapse-admin:
     image: ghcr.io/etkecc/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
     restart: unless-stopped
+    networks:
+      - matrix_network
+
+  coturn:
+    image: coturn/coturn:latest
+    container_name: sky0cloud-turn
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
 
   caddy:
     image: caddy:2-alpine
@@ -58,9 +75,14 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./data/caddy:/data
-      - ./data/caddy_config:/config
-    depends_on:
-      - synapse
-      - element
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    networks:
+      - matrix_network
+
+networks:
+  matrix_network:
+    driver: bridge
+
+volumes:
+  caddy_data:
