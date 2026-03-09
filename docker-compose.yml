@@ -21,7 +21,7 @@ services:
       retries: 5
 
   redis:
-    image: redis:7-alpine
+    image: redis:7
     container_name: sky0cloud-redis
     restart: unless-stopped
     networks:
@@ -68,7 +68,7 @@ services:
       - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
 
   caddy:
-    image: caddy:2-alpine
+    image: caddy:2
     container_name: sky0cloud-caddy
     restart: unless-stopped
     ports:
