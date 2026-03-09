@@ -60,7 +60,6 @@ filter_timeline_limit: 5000
 
 require_auth_for_profile_requests: true
 
-# Registration settings
 enable_registration: false
 registration_requires_token: true
 registration_shared_secret: "Sky0CloudInviteSecret"
