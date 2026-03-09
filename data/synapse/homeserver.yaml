@@ -26,28 +26,26 @@ trusted_proxies:
   - "10.0.0.0/8"
 
 # --- Security (Critical SSRF Protection) ---
-# Prevent outgoing requests from being sent to the following blacklisted IP address CIDR ranges[cite: 174, 175].
-# The blacklist applies to the outbound requests for federation, identity servers, push servers, etc[cite: 177, 178].
 ip_range_blacklist:
-  - [cite_start]'127.0.0.0/8' [cite: 190]
-  - [cite_start]'10.0.0.0/8' [cite: 192]
-  - [cite_start]'172.16.0.0/12' [cite: 193]
-  - [cite_start]'192.168.0.0/16' [cite: 193]
-  - [cite_start]'100.64.0.0/10' [cite: 196]
-  - [cite_start]'192.0.0.0/24' [cite: 196]
-  - [cite_start]'169.254.0.0/16' [cite: 197]
-  - [cite_start]'192.88.99.0/24' [cite: 198]
-  - [cite_start]'198.18.0.0/15' [cite: 199]
-  - [cite_start]'192.0.2.0/24' [cite: 200]
-  - [cite_start]'198.51.100.0/24' [cite: 201]
-  - [cite_start]'203.0.113.0/24' [cite: 202]
-  - [cite_start]'224.0.0.0/4' [cite: 203]
-  - [cite_start]'::1/128' [cite: 204]
-  - [cite_start]'fe80::/10' [cite: 205]
-  - [cite_start]'fc00::/7' [cite: 206]
-  - [cite_start]'2001:db8::/32' [cite: 207]
-  - [cite_start]'ff00::/8' [cite: 208]
-  - [cite_start]'fec0::/10' [cite: 209]
+  - '127.0.0.0/8'
+  - '10.0.0.0/8'
+  - '172.16.0.0/12'
+  - '192.168.0.0/16'
+  - '100.64.0.0/10'
+  - '192.0.0.0/24'
+  - '169.254.0.0/16'
+  - '192.88.99.0/24'
+  - '198.18.0.0/15'
+  - '192.0.2.0/24'
+  - '198.51.100.0/24'
+  - '203.0.113.0/24'
+  - '224.0.0.0/4'
+  - '::1/128'
+  - 'fe80::/10'
+  - 'fc00::/7'
+  - '2001:db8::/32'
+  - 'ff00::/8'
+  - 'fec0::/10'
 
 # --- Database & Caching ---
 database:
@@ -67,24 +65,17 @@ redis:
   port: 6379
 
 # --- Performance & Stability Tuning ---
-# The GC threshold parameters to pass to `gc.set_threshold`[cite: 148].
-[cite_start]gc_thresholds: [700, 10, 10] [cite: 149]
-# The minimum time in seconds between each GC for a generation[cite: 150].
-[cite_start]gc_min_interval: [0.5s, 30s, 1m] [cite: 158]
+gc_thresholds: [700, 10, 10]
+gc_min_interval: [0.5s, 30s, 1m]
 
-# Resource-constrained homeserver settings[cite: 408].
-# When this is enabled, the room "complexity" will be checked before a user joins a new remote room[cite: 410].
 limit_remote_rooms:
-  [cite_start]enabled: true [cite: 418]
-  [cite_start]complexity: 1.0 [cite: 419, 421]
+  enabled: true
+  complexity: 1.0
 
-# Set the limit on the returned events in the timeline in the get and sync operations[cite: 159, 160].
-[cite_start]filter_timeline_limit: 5000 [cite: 164]
+filter_timeline_limit: 5000
 
 # --- Privacy & Access ---
-# Require authentication to retrieve profile data (avatars, display names) of other users[cite: 114].
-[cite_start]require_auth_for_profile_requests: true [cite: 117]
-
+require_auth_for_profile_requests: true
 enable_registration: true
 registration_requires_token: true
 registration_shared_secret: "Sky0CloudInviteSecret"
@@ -94,7 +85,6 @@ allow_guest_access: false
 media_store_path: /data/media_store
 uploads_path: /data/uploads
 max_upload_size: 100M
-# Limit image scaling overhead on the CPU
 max_image_pixels: 32000000
 dynamic_thumbnails: true
 
