@@ -44,7 +44,6 @@ redis:
   host: redis
   port: 6379
 
-# FIXED: Quotes added to durations
 gc_thresholds: [700, 10, 10]
 gc_min_interval: ["0.5s", "30s", "1m"]
 
