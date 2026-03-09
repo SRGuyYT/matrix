@@ -8,10 +8,9 @@ services:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: "Sky0CloudStrongDBPass"
-      PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     networks:
       - matrix_network
     healthcheck:
@@ -39,7 +38,7 @@ services:
     environment:
       SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
     volumes:
-      - ./synapse/data:/data
+      - ./data/synapse:/data
     networks:
       - matrix_network
 
@@ -48,7 +47,7 @@ services:
     container_name: sky0cloud-element-web
     restart: unless-stopped
     volumes:
-      - ./element/config.json:/app/config.json:ro
+      - ./data/element:/app/config
     networks:
       - matrix_network
 
@@ -65,7 +64,7 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
+      - ./data/coturn/turnserver.conf:/etc/coturn/turnserver.conf
 
   caddy:
     image: caddy:2
@@ -75,8 +74,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data/caddy:/data
+      - ./data/caddy_config:/config
     networks:
       - matrix_network
 
