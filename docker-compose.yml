@@ -45,7 +45,6 @@ services:
       - ./data/element/welcome.html:/app/welcome.html:ro
       - ./data/element/background.jpg:/app/background.jpg:ro
       - ./data/element/icon.png:/app/icon.png:ro
-      - ./data/element/sw.js:/app/sw.js:ro
     networks:
       - matrix
 
