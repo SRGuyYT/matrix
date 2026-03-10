@@ -29,7 +29,7 @@
   },
   "branding": {
     "welcome_background_url": "/background.jpg",
-    "welcome_url": /welcome.html
+    "welcome_url": "/welcome.html",
     "auth_header_logo_url": "/icon.png",
     "auth_footer_links": [
       {
@@ -55,9 +55,7 @@
   "features": {
     "admin-gui": true
   },
-  "map_style_url": "https://api.maptiler.com/maps/streets-v2/?key=pUvnmFuYZ2QCGg0rpNta"
-}
-
+  "map_style_url": "https://api.maptiler.com/maps/streets-v2/?key=pUvnmFuYZ2QCGg0rpNta",
   "webrtc": {
     "turnServers": [
       {
@@ -71,4 +69,3 @@
     ]
   }
 }
-
