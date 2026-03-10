@@ -49,13 +49,13 @@ services:
       - matrix
 
   synapse-admin:
-    image: ghcr.io/etkecc/synapse-admin:latest
+    image: awesometechnologies/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
     restart: unless-stopped
     depends_on:
       - synapse
     environment:
-      SYNAPSE_ADMIN_HOMESERVER_URL: http://synapse:8008
+      SYNAPSE_ADMIN_API_URL: http://sky0cloud-synapse:8008
     networks:
       - matrix
 
