@@ -7,6 +7,9 @@ signing_key_path: "/data/sky0cloud.dpdns.org.signing.key"
 report_stats: true
 suppress_key_server_warning: true
 
+# ============================
+# LISTENERS
+# ============================
 listeners:
   - port: 8008
     tls: false
@@ -19,8 +22,8 @@ listeners:
 
 trusted_proxies:
   - "127.0.0.1"
-  - "172.16.0.0/12"
   - "10.0.0.0/8"
+  - "172.16.0.0/12"
 
 ip_range_blacklist:
   - "127.0.0.0/8"
@@ -30,6 +33,9 @@ ip_range_blacklist:
   - "100.64.0.0/10"
   - "169.254.0.0/16"
 
+# ============================
+# DATABASE
+# ============================
 database:
   name: psycopg2
   args:
@@ -41,35 +47,62 @@ database:
     cp_min: 5
     cp_max: 15
 
+# ============================
+# REDIS
+# ============================
 redis:
   enabled: true
   host: redis
   port: 6379
 
-limit_remote_rooms:
-  enabled: true
-  complexity: 1.0
+# === OPEN REGISTRATION WITH CAPTCHA ===
 
-filter_timeline_limit: 5000
-
-require_auth_for_profile_requests: true
-
+# Allow anyone to register
 enable_registration: true
-registration_requires_token: true
-registration_shared_secret: "itoldyou"
+
+# Required because you are not using email or phone verification
+enable_registration_without_verification: true
+
+# Require CAPTCHA challenge
+enable_registration_captcha: true
+
+# Your actual reCAPTCHA keys
+recaptcha_public_key: "6LdhVIUsAAAAAExFNW2lKBmZJ8Reh6mGNtV5AxSe"
+recaptcha_private_key: "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
+
+# Verification endpoint (recommended)
+recaptcha_siteverify_api: "https://www.recaptcha.net/recaptcha/api/siteverify"
+
+# No email/phone required
+registrations_require_3pid: []
+disable_msisdn_registration: true
+
+# No invite tokens
+registration_requires_token: false
+
+# No guest accounts
 allow_guest_access: false
 
+# ============================
+# MEDIA
+# ============================
 media_store_path: /data/media_store
 uploads_path: /data/uploads
 max_upload_size: 100M
 max_image_pixels: 32000000
 dynamic_thumbnails: true
 
+# ============================
+# SERVER NOTICES
+# ============================
 server_notices:
   system_mxid_localpart: "system"
   system_mxid_display_name: "Sky0Cloud Account Notice Team"
   room_name: "[Official] Account Notice"
 
+# ============================
+# PUBLIC ROOMS
+# ============================
 allow_public_rooms_over_federation: true
 allow_public_rooms_without_auth: true
 
@@ -78,6 +111,9 @@ room_list_publication_rules:
     alias: "*"
     action: "allow"
 
+# ============================
+# TURN (COTURN)
+# ============================
 turn_uris:
   - "turn:coturn.sky0cloud.dpdns.org:3478?transport=udp"
   - "turn:coturn.sky0cloud.dpdns.org:3478?transport=tcp"
@@ -86,5 +122,19 @@ turn_shared_secret: "Sky0CloudTurnSecret"
 turn_user_lifetime: "1h"
 turn_allow_guests: false
 
+# ============================
+# FEDERATION
+# ============================
 trusted_key_servers:
   - server_name: "matrix.org"
+
+# ============================
+# PERFORMANCE / MISC
+# ============================
+limit_remote_rooms:
+  enabled: true
+  complexity: 1.0
+
+filter_timeline_limit: 5000
+
+require_auth_for_profile_requests: true
