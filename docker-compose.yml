@@ -41,7 +41,7 @@ services:
     container_name: sky0cloud-element-web
     restart: unless-stopped
     volumes:
-      - ./data/element/config.json:/app/config.json:ro
+      - ./data/element/config.sky0cloud.dpdns.org.json:/app/config.sky0cloud.dpdns.org.json:ro
       - ./data/element/welcome.html:/app/welcome.html:ro
       - ./data/element/background.jpg:/app/background.jpg:ro
       - ./data/element/icon.png:/app/icon.png:ro
