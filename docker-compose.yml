@@ -42,7 +42,6 @@ services:
     container_name: sky0cloud-element-web
     restart: unless-stopped
     volumes:
-      # Your customized app bits
       - ./data/element/config.json:/app/config.json:ro
       - ./data/element/welcome.html:/app/welcome.html:ro
       - ./data/element/background.jpg:/app/background.jpg:ro
@@ -58,6 +57,7 @@ services:
     depends_on:
       - synapse
       - element-web
+      - synapse-admin
     ports:
       - "80:80"
     volumes:
@@ -84,7 +84,7 @@ services:
     depends_on:
       - synapse
     environment:
-      SYNAPSE_ADMIN_HOMESERVER_URL: http://sky0cloud-synapse:8008
+      SYNAPSE_ADMIN_HOMESERVER_URL: http://synapse:8008
     networks:
       - matrix
 
