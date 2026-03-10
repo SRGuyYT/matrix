@@ -7,6 +7,7 @@ services:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse_user
       POSTGRES_PASSWORD: Sky0CloudStrongDBPass
+      POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     networks:
