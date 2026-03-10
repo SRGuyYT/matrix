@@ -13,9 +13,9 @@ listeners:
     type: http
     x_forwarded: true
     bind_addresses: ["0.0.0.0"]
-    resources:
-      - names: [client, federation]
-        compress: true
+  resources:
+    - names: [client, federation, admin]
+      compress: true
 
 trusted_proxies:
   - "127.0.0.1"
@@ -79,6 +79,12 @@ room_list_publication_rules:
   - user_id: "@system:sky0cloud.dpdns.org"
     alias: "*"
     action: "allow"
+
+auto_join_rooms:
+  - "#general:sky0cloud.dpdns.org"
+  - "#info:sky0cloud.dpdns.org"
+
+auto_create_auto_join_rooms: true
 
 turn_uris:
   - "turn:coturn.sky0cloud.dpdns.org:3478?transport=udp"
