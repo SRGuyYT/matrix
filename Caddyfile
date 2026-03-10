@@ -3,15 +3,13 @@
     auto_https off
 }
 
-# Synapse Admin UI
-admin.sky0cloud.dpdns.org:80 {
+# Synapse Admin UI on port 9000
+:9000 {
     reverse_proxy sky0cloud-synapse-admin:80
 }
 
 # Main domain (Element + Matrix API)
 sky0cloud.dpdns.org:80 {
-
-    # Global CORS
     header {
         Access-Control-Allow-Origin *
         Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
@@ -19,7 +17,6 @@ sky0cloud.dpdns.org:80 {
         Access-Control-Expose-Headers "Content-Length, X-Matrix-User-ID"
     }
 
-    # Matrix discovery
     handle /.well-known/matrix/client {
         header Content-Type application/json
         respond `{
@@ -36,7 +33,6 @@ sky0cloud.dpdns.org:80 {
         }` 200
     }
 
-    # Matrix API routes
     @matrix path /_matrix/* /_synapse/* /_admin/*
     handle @matrix {
         reverse_proxy sky0cloud-synapse:8008 {
@@ -47,7 +43,6 @@ sky0cloud.dpdns.org:80 {
         }
     }
 
-    # Element web client
     handle {
         reverse_proxy sky0cloud-element-web:80
     }
