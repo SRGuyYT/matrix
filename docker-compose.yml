@@ -7,8 +7,8 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: synapse
-      POSTGRES_USER: synapse
-      POSTGRES_PASSWORD: CHANGE_ME_POSTGRES_PASSWORD
+      POSTGRES_USER: synapse_user
+      POSTGRES_PASSWORD: Sky0CloudStrongDBPass
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     networks:
@@ -50,6 +50,17 @@ services:
     networks:
       - matrix
 
+  synapse-admin:
+    image: ghcr.io/etkecc/synapse-admin:latest
+    container_name: sky0cloud-synapse-admin
+    restart: unless-stopped
+    depends_on:
+      - synapse
+    environment:
+      SYNAPSE_ADMIN_HOMESERVER_URL: http://synapse:8008
+    networks:
+      - matrix
+
   caddy:
     image: caddy:2
     container_name: sky0cloud-caddy
@@ -76,17 +87,6 @@ services:
       - ./data/coturn/turnserver.conf:/etc/turnserver.conf:ro
       - ./data/coturn:/var/lib/coturn
     command: ["turnserver", "-c", "/etc/turnserver.conf"]
-
-  synapse-admin:
-    image: ghcr.io/etkecc/synapse-admin:latest
-    container_name: sky0cloud-synapse-admin
-    restart: unless-stopped
-    depends_on:
-      - synapse
-    environment:
-      SYNAPSE_ADMIN_HOMESERVER_URL: http://synapse:8008
-    networks:
-      - matrix
 
 networks:
   matrix:
