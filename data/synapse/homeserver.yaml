@@ -92,6 +92,7 @@ turn_uris:
 
 turn_shared_secret: "Sky0CloudTurnSecret"
 macaroon_secret_key: "Sky0CloudMacaroonSecret"
+registration_shared_secret: "Sky0CloudRegistrationSecret"
 turn_user_lifetime: "1h"
 turn_allow_guests: false
 
