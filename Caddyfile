@@ -3,11 +3,6 @@
     auto_https off
 }
 
-# Synapse Admin UI on port 9000
-:9000 {
-    reverse_proxy sky0cloud-synapse-admin:80
-}
-
 # Main domain (Element + Matrix API)
 sky0cloud.dpdns.org:80 {
     header {
