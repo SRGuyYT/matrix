@@ -35,7 +35,7 @@ database:
   args:
     user: synapse_user
     password: "Sky0CloudStrongDBPass"
-    dbname: synapse
+    database: synapse
     host: postgres
     port: 5432
     cp_min: 5
@@ -56,7 +56,7 @@ require_auth_for_profile_requests: true
 
 enable_registration: true
 registration_requires_token: true
-registration_shared_secret: "Sky0CloudInviteSecret"
+registration_shared_secret: "itoldyou"
 allow_guest_access: false
 
 media_store_path: /data/media_store
@@ -77,3 +77,14 @@ room_list_publication_rules:
   - user_id: "@system:sky0cloud.dpdns.org"
     alias: "*"
     action: "allow"
+
+turn_uris:
+  - "turn:coturn.sky0cloud.dpdns.org:3478?transport=udp"
+  - "turn:coturn.sky0cloud.dpdns.org:3478?transport=tcp"
+
+turn_shared_secret: "Sky0CloudTurnSecret"
+turn_user_lifetime: "1h"
+turn_allow_guests: false
+
+trusted_key_servers:
+  - server_name: "matrix.org"
