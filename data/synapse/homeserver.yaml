@@ -13,9 +13,9 @@ listeners:
     type: http
     x_forwarded: true
     bind_addresses: ["0.0.0.0"]
-  resources:
-    - names: [client, federation, admin]
-      compress: true
+    resources:
+      - names: [client, federation, admin]
+        compress: true
 
 trusted_proxies:
   - "127.0.0.1"
