@@ -45,5 +45,5 @@ sky0cloud.dpdns.org:80 {
 
 # Synapse Admin Panel
 admin.sky0cloud.dpdns.org:80 {
-    reverse_proxy 127.0.0.1:9000
+    reverse_proxy sky0cloud-synapse-admin:80
 }
