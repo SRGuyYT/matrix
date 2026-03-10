@@ -55,6 +55,8 @@ services:
     restart: unless-stopped
     depends_on:
       - synapse
+    ports:
+      - "9000:80"
     environment:
       SYNAPSE_ADMIN_HOMESERVER_URL: http://synapse:8008
     networks:
