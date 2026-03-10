@@ -10,21 +10,24 @@
       "base_url": "https://vector.im"
     }
   },
+
   "branding": {
     "authHeaderLogoUrl": "icon.png",
-    "welcomeBackgroundUrl": "background.jpg"
+    "welcomeBackgroundUrl": "background.jpg",
+    "welcomeHeader": "Welcome to Sky0Cloud",
+    "welcomeBody": "Decentralized, encrypted communication for everyone."
   },
-  "integrations_ui_url": "https://scalar.vector.im/",
-  "integrations_rest_url": "https://scalar.vector.im/api",
-  "integrations_widgets_urls": [
-    "https://scalar.vector.im/_matrix/integrations/v1",
-    "https://scalar.vector.im/api",
-    "https://scalar-staging.vector.im/_matrix/integrations/v1",
-    "https://scalar-staging.vector.im/api"
-  ],
-  "bug_report_endpoint_url": "https://rageshakes.element.io/api/submit",
-  "uisi_autorageshake_app": "element-auto-uisi",
+
+  "default_theme": "dark",
+  "default_federate": true,
+  "disable_custom_urls": false,
+  "disable_guests": false,
+  "disable_login_language_selector": false,
+  "disable_3pid_login": false,
+  "force_verification": false,
+
   "show_labs_settings": true,
+
   "room_directory": {
     "servers": [
       "sky0cloud.dpdns.org",
@@ -32,9 +35,11 @@
       "gitter.im"
     ]
   },
+
   "enable_presence_by_hs_url": {
     "https://sky0cloud.dpdns.org": true
   },
+
   "terms_and_conditions_links": [
     {
       "url": "https://sky0cloud.dpdns.org/privacy",
@@ -45,31 +50,43 @@
       "text": "Cookie Policy"
     }
   ],
+
   "privacy_policy_url": "https://sky0cloud.dpdns.org/privacy",
+
   "features": {
     "threadsActivityCentre": true,
     "feature_video_rooms": true,
     "feature_group_calls": true,
     "feature_element_call_video_rooms": true
   },
+
   "setting_defaults": {
     "RustCrypto.staged_rollout_percent": 100,
     "Registration.mobileRegistrationHelper": true,
     "breadcrumbs": true
   },
+
   "element_call": {
     "url": "https://call.element.io",
     "brand": "Sky0Cloud"
   },
+
   "jitsi": {
     "preferred_domain": "meet.jit.si"
   },
-  "default_theme": "dark",
-  "default_federate": true,
-  "disable_custom_urls": false,
-  "disable_guests": false,
-  "disable_login_language_selector": false,
-  "disable_3pid_login": false,
+
+  "integrations_ui_url": "https://scalar.vector.im/",
+  "integrations_rest_url": "https://scalar.vector.im/api",
+  "integrations_widgets_urls": [
+    "https://scalar.vector.im/_matrix/integrations/v1",
+    "https://scalar.vector.im/api",
+    "https://scalar-staging.vector.im/_matrix/integrations/v1",
+    "https://scalar-staging.vector.im/api"
+  ],
+
+  "bug_report_endpoint_url": "https://rageshakes.element.io/api/submit",
+  "uisi_autorageshake_app": "element-auto-uisi",
+
   "auth_footer_links": [
     {
       "text": "Login",
@@ -78,12 +95,21 @@
     {
       "text": "Signup",
       "url": "/#/register"
-    },
-    {
-      "text": "Access Code",
-      "url": "/#/register?token=itoldyou"
     }
   ],
-  "force_verification": false,
-  "map_style_url": "https://api.maptiler.com/maps/streets/style.json?key=fU3vlMsMn4Jb6dnEIFsx"
+
+  "map_style_url": "https://api.maptiler.com/maps/streets/style.json?key=fU3vlMsMn4Jb6dnEIFsx",
+
+  "webrtc": {
+    "turnServers": [
+      {
+        "urls": [
+          "turn:coturn.sky0cloud.dpdns.org:3478?transport=udp",
+          "turn:coturn.sky0cloud.dpdns.org:3478?transport=tcp"
+        ],
+        "username": "placeholder",
+        "credential": "placeholder"
+      }
+    ]
+  }
 }
