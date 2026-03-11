@@ -14,7 +14,7 @@ listeners:
     x_forwarded: true
     bind_addresses: ["0.0.0.0"]
     resources:
-      - names: [client, federation]
+      - names: [client, federation, openid]
         compress: true
 
 trusted_proxies:
