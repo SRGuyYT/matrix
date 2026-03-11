@@ -88,4 +88,4 @@ services:
 
 networks:
   matrix:
-    name: matrix_network
+    name: matrix_matrix_network
