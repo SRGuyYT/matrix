@@ -105,3 +105,11 @@ limit_remote_rooms:
 
 filter_timeline_limit: 5000
 require_auth_for_profile_requests: true
+
+# Allow the Synapse-Admin panel to communicate with the API
+allow_cors: true
+
+# Explicitly expose the Admin API and Client API for the frontend
+additional_resources:
+  - names: ["/_matrix/client", "/_synapse/admin"]
+    compress: true
