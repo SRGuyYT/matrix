@@ -44,7 +44,9 @@ sky0cloud.dpdns.org:80 {
 }
 
 admin.sky0cloud.dpdns.org:80 {
-    header_up CF-Access-Client-Id "3ba6cbfd84bc38d308073186a1a7f538.access"
-    header_up CF-Access-Client-Secret "598bf3224a1a07d6eb8da525a8e3773a2d6700594fe9ac35ba4fea78b113833b"
-    reverse_proxy sky0cloud-synapse-admin:80
+    reverse_proxy sky0cloud-synapse-admin:80 {
+        header_up CF-Access-Client-Id "3ba6cbfd84bc38d308073186a1a7f538.access"
+        header_up CF-Access-Client-Secret "598bf3224a1a07d6eb8da525a8e3773a2d6700594fe9ac35ba4fea78b113833b"
+    }
 }
+
