@@ -49,7 +49,7 @@ services:
       - matrix
 
   synapse-admin:
-    image: awesometechnologies/synapse-admin:latest
+    image: ghcr.io/etkecc/synapse-admin:latest
     container_name: sky0cloud-synapse-admin
     restart: unless-stopped
     depends_on:
@@ -88,4 +88,4 @@ services:
 
 networks:
   matrix:
-    name: matrix_matrix_network
+    name: matrix_network
