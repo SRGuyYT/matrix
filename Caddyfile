@@ -19,31 +19,14 @@ sky0cloud.dpdns.org:80 {
         respond `{"m.server": "sky0cloud.dpdns.org:443"}` 200
     }
 
-    # Preflight CORS – OPTIONS requests
-    @preflight method OPTIONS
-    handle @preflight {
-        header Access-Control-Allow-Origin "https://admin.sky0cloud.dpdns.org"
-        header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-        header Access-Control-Allow-Headers "Authorization, Content-Type, X-Matrix-User-ID"
-        header Access-Control-Allow-Credentials "true"
-        respond "" 204
-    }
-
-    # Synapse API (Matrix client endpoints)
+    # Synapse API & Admin API
+    # We no longer manually add CORS headers here because 
+    # Synapse is now configured to send them itself.
     handle /_matrix/* {
-        header Access-Control-Allow-Origin "https://admin.sky0cloud.dpdns.org"
-        header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-        header Access-Control-Allow-Headers "Authorization, Content-Type, X-Matrix-User-ID"
-        header Access-Control-Allow-Credentials "true"
         reverse_proxy sky0cloud-synapse:8008
     }
 
-    # Synapse Admin API
     handle /_synapse/admin/* {
-        header Access-Control-Allow-Origin "https://admin.sky0cloud.dpdns.org"
-        header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-        header Access-Control-Allow-Headers "Authorization, Content-Type, X-Matrix-User-ID"
-        header Access-Control-Allow-Credentials "true"
         reverse_proxy sky0cloud-synapse:8008
     }
 
