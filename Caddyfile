@@ -3,7 +3,7 @@
     auto_https off
 }
 
-# Main domain
+# Main domain – Element Web + Synapse API
 sky0cloud.dpdns.org:80 {
 
     # Well-known for Matrix
@@ -17,10 +17,10 @@ sky0cloud.dpdns.org:80 {
         respond `{"m.server": "sky0cloud.dpdns.org:443"}` 200
     }
 
-    # Preflight CORS
+    # Preflight CORS – allow both Element Web and Admin panel
     @preflight method OPTIONS
     handle @preflight {
-        header Access-Control-Allow-Origin "https://admin.sky0cloud.dpdns.org"
+        header Access-Control-Allow-Origin "https://sky0cloud.dpdns.org https://admin.sky0cloud.dpdns.org"
         header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
         header Access-Control-Allow-Headers "Authorization, Content-Type, X-Matrix-User-ID"
         header Access-Control-Allow-Credentials "true"
@@ -29,7 +29,7 @@ sky0cloud.dpdns.org:80 {
 
     # Synapse API
     handle /_matrix/* {
-        header Access-Control-Allow-Origin "https://admin.sky0cloud.dpdns.org"
+        header Access-Control-Allow-Origin "https://sky0cloud.dpdns.org https://admin.sky0cloud.dpdns.org"
         header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
         header Access-Control-Allow-Headers "Authorization, Content-Type, X-Matrix-User-ID"
         header Access-Control-Allow-Credentials "true"
@@ -37,7 +37,7 @@ sky0cloud.dpdns.org:80 {
     }
 
     handle /_synapse/admin/* {
-        header Access-Control-Allow-Origin "https://admin.sky0cloud.dpdns.org"
+        header Access-Control-Allow-Origin "https://sky0cloud.dpdns.org https://admin.sky0cloud.dpdns.org"
         header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
         header Access-Control-Allow-Headers "Authorization, Content-Type, X-Matrix-User-ID"
         header Access-Control-Allow-Credentials "true"
@@ -52,7 +52,7 @@ sky0cloud.dpdns.org:80 {
 
 # Admin panel
 admin.sky0cloud.dpdns.org:80 {
-    reverse_proxy sky0cloud-synapse-admin:8080 {
+    reverse_proxy sky0cloud-synapse-admin:8080
         header_up Host {host}
         header_up X-Real-IP {remote_host}
     }
