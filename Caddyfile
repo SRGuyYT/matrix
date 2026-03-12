@@ -1,20 +1,10 @@
 {
     email chapmlinks@gmail.com
-    # auto_https off # Only keep this off if you are 100% sure Cloudflare is handling SSL and talking to you on port 80
+    auto_https off
 }
 
-# Main domain (Element + Matrix API)
+# Main domain
 sky0cloud.dpdns.org:80 {
-
-    # Optimized CORS headers for Synapse-Admin
-    header {
-        # It is safer to specify the exact origin instead of * when using credentials
-        Access-Control-Allow-Origin "https://admin.sky0cloud.dpdns.org"
-        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-        Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Matrix-User-ID"
-        Access-Control-Expose-Headers "Content-Length, X-Matrix-User-ID"
-        Access-Control-Allow-Credentials "true"
-    }
 
     # Well-known for Matrix
     handle /.well-known/matrix/client {
@@ -27,30 +17,44 @@ sky0cloud.dpdns.org:80 {
         respond `{"m.server": "sky0cloud.dpdns.org:443"}` 200
     }
 
-    # Synapse API routes
+    # Preflight CORS
+    @preflight method OPTIONS
+    handle @preflight {
+        respond "" 204 {
+            header Access-Control-Allow-Origin "https://admin.sky0cloud.dpdns.org"
+            header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+            header Access-Control-Allow-Headers "Authorization, Content-Type, X-Matrix-User-ID"
+            header Access-Control-Allow-Credentials "true"
+        }
+    }
+
+    # Synapse API
     handle /_matrix/* {
         reverse_proxy sky0cloud-synapse:8008
+        header Access-Control-Allow-Origin "https://admin.sky0cloud.dpdns.org"
+        header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        header Access-Control-Allow-Headers "Authorization, Content-Type, X-Matrix-User-ID"
+        header Access-Control-Allow-Credentials "true"
     }
-    
+
     handle /_synapse/admin/* {
         reverse_proxy sky0cloud-synapse:8008
+        header Access-Control-Allow-Origin "https://admin.sky0cloud.dpdns.org"
+        header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        header Access-Control-Allow-Headers "Authorization, Content-Type, X-Matrix-User-ID"
+        header Access-Control-Allow-Credentials "true"
     }
 
     # Serve Element Web
     handle {
-        reverse_proxy sky0cloud-element-web:80
+        reverse_proxy sky0cloud-element:80
     }
 }
 
-# Synapse Admin Panel
+# Admin panel
 admin.sky0cloud.dpdns.org:80 {
-    # CRITICAL: etkecc image uses port 8080
     reverse_proxy sky0cloud-synapse-admin:8080 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
-        
-        # Cloudflare Access Headers (If required by your backend)
-        header_up CF-Access-Client-Id "3ba6cbfd84bc38d308073186a1a7f538.access"
-        header_up CF-Access-Client-Secret "598bf3224a1a07d6eb8da525a8e3773a2d6700594fe9ac35ba4fea78b113833b"
     }
 }
