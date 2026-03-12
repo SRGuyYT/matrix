@@ -106,6 +106,12 @@ limit_remote_rooms:
 filter_timeline_limit: 5000
 require_auth_for_profile_requests: true
 
+# Allow the Synapse-Admin panel to communicate with the API
+allow_cors: true
+cors_allowed_origins:
+  - "https://admin.sky0cloud.dpdns.org"
+  - "https://sky0cloud.dpdns.org"
+
 # Explicitly expose the Admin API and Client API for the frontend
 additional_resources:
   - names: ["/_matrix/client", "/_synapse/admin"]
