@@ -52,8 +52,8 @@ sky0cloud.dpdns.org:80 {
 
 # Admin panel
 admin.sky0cloud.dpdns.org:80 {
-    reverse_proxy sky0cloud-synapse-admin:8080
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
+    reverse_proxy sky0cloud-synapse-admin:8080 {
+        header_up Host {http.request.host}
+        header_up X-Real-IP {http.request.remote.host}
     }
 }
