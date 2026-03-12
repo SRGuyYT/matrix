@@ -76,7 +76,7 @@ allow_public_rooms_over_federation: true
 allow_public_rooms_without_auth: true
 
 room_list_publication_rules:
-  - user_id: "@system:sky0cloud.dpdns.org"
+  - user_id: "*"
     alias: "*"
     action: "allow"
 
