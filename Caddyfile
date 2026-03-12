@@ -8,13 +8,15 @@ sky0cloud.dpdns.org:80 {
 
     # Well-known for Matrix
     handle /.well-known/matrix/client {
-        header Content-Type application/json
-        respond `{"m.homeserver": {"base_url": "https://sky0cloud.dpdns.org"}}` 200
+        respond `{"m.homeserver": {"base_url": "https://sky0cloud.dpdns.org"}}` 200 {
+            header Content-Type application/json
+        }
     }
 
     handle /.well-known/matrix/server {
-        header Content-Type application/json
-        respond `{"m.server": "sky0cloud.dpdns.org:443"}` 200
+        respond `{"m.server": "sky0cloud.dpdns.org:443"}` 200 {
+            header Content-Type application/json
+        }
     }
 
     # Preflight CORS
@@ -47,13 +49,13 @@ sky0cloud.dpdns.org:80 {
 
     # Serve Element Web
     handle {
-        reverse_proxy sky0cloud-element:80
+        reverse_proxy sky0cloud-element-web:8080
     }
 }
 
 # Admin panel
 admin.sky0cloud.dpdns.org:80 {
-    reverse_proxy sky0cloud-synapse-admin:8080 {
+    reverse_proxy sky0cloud-synapse-admin:80 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
     }
