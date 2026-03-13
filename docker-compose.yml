@@ -55,6 +55,8 @@ services:
       context: https://github.com/Awesome-Technologies/synapse-admin.git
       args:
         - BUILDKIT_CONTEXT_KEEP_GIT_DIR=1
+    ports:
+      - "8090:80"
     restart: unless-stopped
     networks:
       - matrix
