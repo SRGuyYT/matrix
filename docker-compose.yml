@@ -49,13 +49,13 @@ services:
       - matrix
 
   synapse-admin:
-    image: ghcr.io/etkecc/synapse-admin:latest
-    container_name: sky0cloud-synapse-admin
+    container_name: synapse-admin
+    hostname: synapse-admin
+    build:
+      context: https://github.com/Awesome-Technologies/synapse-admin.git
+      args:
+        - BUILDKIT_CONTEXT_KEEP_GIT_DIR=1
     restart: unless-stopped
-    depends_on:
-      - synapse
-    environment:
-      SYNAPSE_ADMIN_API_URL: http://sky0cloud-synapse:8008
     networks:
       - matrix
 
