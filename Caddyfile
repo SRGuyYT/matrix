@@ -42,7 +42,7 @@ sky0cloud.dpdns.org:80 {
 # -------------------------------
 # Synapse Admin UI
 # -------------------------------
-admin.sky0cloud.dpdns.org:80 {
+admin.sky0cloud.dpdns.org:8080 {
 
     reverse_proxy sky0cloud-synapse-admin:80 {
         header_up Host {host}
