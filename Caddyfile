@@ -8,40 +8,46 @@
 # -------------------------------
 sky0cloud.dpdns.org:80 {
 
-    # Well-known for Matrix
+    # Matrix client discovery
     handle /.well-known/matrix/client {
         header Content-Type application/json
-        respond `{"m.homeserver": {"base_url": "https://sky0cloud.dpdns.org"}}` 200
+        header Access-Control-Allow-Origin https://admin.sky0cloud.dpdns.org
+        header Access-Control-Allow-Methods "GET, OPTIONS"
+        header Access-Control-Allow-Headers "Authorization, Content-Type"
+        respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}` 200
     }
 
+    # Matrix federation discovery
     handle /.well-known/matrix/server {
         header Content-Type application/json
-        respond `{"m.server": "sky0cloud.dpdns.org:443"}` 200
+        respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200
     }
 
-    # Synapse API & Admin API
-    # We no longer manually add CORS headers here because 
-    # Synapse is now configured to send them itself.
+    # Synapse Matrix client API
     handle /_matrix/* {
         reverse_proxy sky0cloud-synapse:8008
     }
 
+    # Synapse Admin API
     handle /_synapse/admin/* {
         reverse_proxy sky0cloud-synapse:8008
     }
 
-    # Serve Element Web
+    # Element Web frontend
     handle {
         reverse_proxy sky0cloud-element-web:80
     }
 }
 
 # -------------------------------
-# Admin panel
+# Synapse Admin UI
 # -------------------------------
 admin.sky0cloud.dpdns.org:80 {
-    reverse_proxy sky0cloud-synapse-admin:8080 {
+
+    reverse_proxy sky0cloud-synapse-admin:80 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
     }
 }
