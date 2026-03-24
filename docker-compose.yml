@@ -6,13 +6,27 @@ services:
     ports:
       - "6167:6167"
     environment:
+      # Server identity
       CONTINUWUITY_SERVER_NAME: sky0cloud.dpdns.org
-      CONTINUWUITY_DATABASE_PATH: /var/lib/continuwuity
       CONTINUWUITY_ADDRESS: 0.0.0.0
-      CONTINUWUITY_ALLOW_REGISTRATION: "false"
+      CONTINUWUITY_PORT: 6167
+
+      # Database location
+      CONTINUWUITY_DATABASE_PATH: /var/lib/continuwuity
+
+      # Registration control (choose one)
+      CONTINUWUITY_ALLOW_REGISTRATION: "true"
+      #CONTINUWUITY_REGISTRATION_TOKEN: "omg"  # Optional: token-protected registration
+      #CONTINUWUITY_RECAPTCHA_SITE_KEY: "6LdhVIUsAAAAAExFNW2lKBmZJ8Reh6mGNtV5AxSe"   # Optional: CAPTCHA
+      #CONTINUWUITY_RECAPTCHA_PRIVATE_SITE_KEY: "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
+
+      # Admin auto-creation
+      CONTINUWUITY_ADMIN_EXECUTE: '["users create-user admin", "users make-user-admin admin"]'
+
+      # Optional limits
+      CONTINUWUITY_MAX_REQUEST_SIZE: 100000000
     volumes:
       - ./data/continuwuity:/var/lib/continuwuity
-    command: /sbin/conduwuit --execute "users create-user admin"
     networks:
       - matrix
 
