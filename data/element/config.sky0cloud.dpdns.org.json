@@ -39,14 +39,8 @@
     "welcome_url": "/welcome.html",
     "auth_header_logo_url": "/icon.png",
     "auth_footer_links": [
-      {
-        "text": "Login",
-        "url": "/#/login"
-      },
-      {
-        "text": "Signup",
-        "url": "/#/register"
-      }
+      { "text": "Login", "url": "/#/login" },
+      { "text": "Signup", "url": "/#/register" }
     ]
   },
 
@@ -63,12 +57,16 @@
   "show_labs_settings": true,
 
   "features": {
-    "admin-gui": true
+    "admin-gui": true,
+    "threadsActivityCentre": true,
+    "feature_video_rooms": true,
+    "feature_group_calls": true
   },
 
   "map_style_url": "https://api.maptiler.com/maps/streets-v2/?key=pUvnmFuYZ2QCGg0rpNta",
 
   "webrtc": {
+    "preferredCodec": "VP8",
     "turnServers": [
       {
         "urls": [
