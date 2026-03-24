@@ -10,9 +10,9 @@ services:
       CONTINUWUITY_DATABASE_PATH: /var/lib/continuwuity
       CONTINUWUITY_ADDRESS: 0.0.0.0
       CONTINUWUITY_ALLOW_REGISTRATION: "true"
-      CONTINUWUITY_REGISTRATION_TOKEN: "omg"               # Optional: registration token
-      # CONTINUWUITY_RECAPTCHA_SITE_KEY: "<site_key>"    # Optional: CAPTCHA
-      # CONTINUWUITY_RECAPTCHA_PRIVATE_SITE_KEY: "<secret_key>"
+      #CONTINUWUITY_REGISTRATION_TOKEN: "omg"
+      CONTINUWUITY_RECAPTCHA_SITE_KEY: "6LdhVIUsAAAAAExFNW2lKBmZJ8Reh6mGNtV5AxSe"
+      CONTINUWUITY_RECAPTCHA_PRIVATE_SITE_KEY: "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
       CONTINUWUITY_ADMIN_EXECUTE: '["users create-user admin","users make-user-admin admin"]'
       CONTINUWUITY_MAX_REQUEST_SIZE: 100000000
     volumes:
