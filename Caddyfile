@@ -4,7 +4,7 @@
 }
 
 # -------------------------------
-# Main domain – Element Web + Synapse API
+# Main domain – Element Web + Continuwuity API
 # -------------------------------
 sky0cloud.dpdns.org:80 {
 
@@ -23,31 +23,18 @@ sky0cloud.dpdns.org:80 {
         respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200
     }
 
-    # Synapse Matrix client API
+    # Continuwuity Matrix client API
     handle /_matrix/* {
-        reverse_proxy sky0cloud-synapse:8008
+        reverse_proxy sky0cloud-continuwuity:6167
     }
 
-    # Synapse Admin API
-    handle /_synapse/admin/* {
-        reverse_proxy sky0cloud-synapse:8008
+    # Continuwuity Admin API (optional if used)
+    handle /_admin/* {
+        reverse_proxy sky0cloud-continuwuity:6167
     }
 
     # Element Web frontend
     handle {
         reverse_proxy sky0cloud-element-web:80
-    }
-}
-
-# -------------------------------
-# Synapse Admin UI
-# -------------------------------
-admin.sky0cloud.dpdns.org:8080 {
-
-    reverse_proxy sky0cloud-synapse-admin:80 {
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Forwarded-Proto {scheme}
     }
 }
