@@ -13,7 +13,6 @@ services:
       #CONTINUWUITY_REGISTRATION_TOKEN: "omg"
       CONTINUWUITY_RECAPTCHA_SITE_KEY: "6LdhVIUsAAAAAExFNW2lKBmZJ8Reh6mGNtV5AxSe"
       CONTINUWUITY_RECAPTCHA_PRIVATE_SITE_KEY: "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
-      CONTINUWUITY_ADMIN_EXECUTE: '["users create-user admin","users make-user-admin admin"]'
       CONTINUWUITY_MAX_REQUEST_SIZE: 100000000
     volumes:
       - ./data/continuwuity:/var/lib/continuwuity
