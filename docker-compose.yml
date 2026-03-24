@@ -1,38 +1,18 @@
 services:
-  postgres:
-    image: postgres:16
-    container_name: sky0cloud-postgres
+  continuwuity:
+    image: forgejo.ellis.link/continuwuation/continuwuity:latest
+    container_name: sky0cloud-continuwuity
     restart: unless-stopped
+    ports:
+      - "6167:6167"
     environment:
-      POSTGRES_DB: synapse
-      POSTGRES_USER: synapse_user
-      POSTGRES_PASSWORD: Sky0CloudStrongDBPass
-      POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
+      CONTINUWUITY_SERVER_NAME: sky0cloud.dpdns.org
+      CONTINUWUITY_DATABASE_PATH: /var/lib/continuwuity
+      CONTINUWUITY_ADDRESS: 0.0.0.0
+      CONTINUWUITY_ALLOW_REGISTRATION: "false"
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
-    networks:
-      - matrix
-
-  redis:
-    image: redis:7
-    container_name: sky0cloud-redis
-    restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes"]
-    networks:
-      - matrix
-
-  synapse:
-    image: matrixdotorg/synapse:latest
-    container_name: sky0cloud-synapse
-    restart: unless-stopped
-    depends_on:
-      - postgres
-      - redis
-    environment:
-      SYNAPSE_SERVER_NAME: sky0cloud.dpdns.org
-      SYNAPSE_REPORT_STATS: "yes"
-    volumes:
-      - ./data/synapse:/data
+      - ./data/continuwuity:/var/lib/continuwuity
+    command: /sbin/conduwuit --execute "users create-user admin"
     networks:
       - matrix
 
@@ -41,21 +21,10 @@ services:
     container_name: sky0cloud-element-web
     restart: unless-stopped
     volumes:
-      - ./data/element/config.sky0cloud.dpdns.org.json:/app/config.sky0cloud.dpdns.org.json:ro
+      - ./data/element/config.sky0cloud.dpdns.org.json:/app/config.json:ro
       - ./data/element/welcome.html:/app/welcome.html:ro
       - ./data/element/background.jpg:/app/background.jpg:ro
       - ./data/element/icon.png:/app/icon.png:ro
-    networks:
-      - matrix
-
-  synapse-admin:
-    container_name: synapse-admin
-    hostname: synapse-admin
-    build:
-      context: https://github.com/Awesome-Technologies/synapse-admin.git
-      args:
-        - BUILDKIT_CONTEXT_KEEP_GIT_DIR=1
-    restart: unless-stopped
     networks:
       - matrix
 
@@ -64,11 +33,11 @@ services:
     container_name: sky0cloud-caddy
     restart: unless-stopped
     depends_on:
-      - synapse
+      - continuwuity
       - element-web
-      - synapse-admin
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./data/caddy:/data
