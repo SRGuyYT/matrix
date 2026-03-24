@@ -25,12 +25,12 @@ sky0cloud.dpdns.org:80 {
 
     # Continuwuity Matrix client API
     handle /_matrix/* {
-        reverse_proxy sky0cloud-continuwuity:6167
+        reverse_proxy sky0cloud-continuwuity:8008
     }
 
     # Continuwuity Admin API (optional if used)
     handle /_admin/* {
-        reverse_proxy sky0cloud-continuwuity:6167
+        reverse_proxy sky0cloud-continuwuity:8008
     }
 
     # Element Web frontend
