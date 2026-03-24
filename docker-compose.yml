@@ -6,24 +6,14 @@ services:
     ports:
       - "6167:6167"
     environment:
-      # Server identity
       CONTINUWUITY_SERVER_NAME: sky0cloud.dpdns.org
-      CONTINUWUITY_ADDRESS: 0.0.0.0
-      CONTINUWUITY_PORT: 6167
-
-      # Database location
       CONTINUWUITY_DATABASE_PATH: /var/lib/continuwuity
-
-      # Registration control (choose one)
+      CONTINUWUITY_ADDRESS: 0.0.0.0
       CONTINUWUITY_ALLOW_REGISTRATION: "true"
-      #CONTINUWUITY_REGISTRATION_TOKEN: "omg"  # Optional: token-protected registration
-      #CONTINUWUITY_RECAPTCHA_SITE_KEY: "6LdhVIUsAAAAAExFNW2lKBmZJ8Reh6mGNtV5AxSe"   # Optional: CAPTCHA
-      #CONTINUWUITY_RECAPTCHA_PRIVATE_SITE_KEY: "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
-
-      # Admin auto-creation
-      CONTINUWUITY_ADMIN_EXECUTE: '["users create-user admin", "users make-user-admin admin"]'
-
-      # Optional limits
+      CONTINUWUITY_REGISTRATION_TOKEN: "omg"               # Optional: registration token
+      # CONTINUWUITY_RECAPTCHA_SITE_KEY: "<site_key>"    # Optional: CAPTCHA
+      # CONTINUWUITY_RECAPTCHA_PRIVATE_SITE_KEY: "<secret_key>"
+      CONTINUWUITY_ADMIN_EXECUTE: '["users create-user admin","users make-user-admin admin"]'
       CONTINUWUITY_MAX_REQUEST_SIZE: 100000000
     volumes:
       - ./data/continuwuity:/var/lib/continuwuity
@@ -42,32 +32,55 @@ services:
     networks:
       - matrix
 
+  coturn:
+    image: coturn/coturn:latest
+    container_name: sky0cloud-turn
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./data/coturn/turnserver.conf:/etc/turnserver.conf:ro
+    command: ["turnserver", "-c", "/etc/turnserver.conf"]
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: sky0cloud-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: continuwuity_user
+      POSTGRES_PASSWORD: Sky0CloudStrongDBPass
+      POSTGRES_DB: continuwuity
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  postgres-backup:
+    image: prodrigestivill/postgres-backup-local
+    container_name: sky0cloud-postgres-backup
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: continuwuity
+      POSTGRES_USER: continuwuity_user
+      POSTGRES_PASSWORD: Sky0CloudStrongDBPass
+      SCHEDULE: "@daily"
+    volumes:
+      - ./backup:/backups
+    depends_on:
+      - postgres
+
   caddy:
-    image: caddy:2
+    image: caddy:2-alpine
     container_name: sky0cloud-caddy
     restart: unless-stopped
-    depends_on:
-      - continuwuity
-      - element-web
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./data/caddy:/data
-      - ./data/caddy:/config
-    networks:
-      - matrix
-
-  coturn:
-    image: coturn/coturn:latest
-    container_name: sky0cloud-turn
-    restart: unless-stopped
-    network_mode: "host"
-    volumes:
-      - ./data/coturn/turnserver.conf:/etc/turnserver.conf:ro
-      - ./data/coturn:/var/lib/coturn
-    command: ["turnserver", "-c", "/etc/turnserver.conf"]
+      - ./data/caddy_config:/config
+    depends_on:
+      - continuwuity
+      - element-web
 
 networks:
   matrix:
