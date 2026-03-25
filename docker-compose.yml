@@ -6,6 +6,7 @@ services:
     ports:
       - "6167:6167"
     environment:
+      CONDUWUIT_REQUEST_TIMEOUT: 30000
       CONTINUWUITY_SERVER_NAME: sky0cloud.dpdns.org
       CONTINUWUITY_DATABASE_PATH: /var/lib/continuwuity
       CONTINUWUITY_ADDRESS: 0.0.0.0
