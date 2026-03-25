@@ -17,6 +17,7 @@ services:
       CONTINUWUITY_RECAPTCHA_PRIVATE_SITE_KEY: "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
       CONTINUWUITY_MAX_REQUEST_SIZE: 100000000
     volumes:
+      - /etc/resolv.conf:/etc/resolv.conf:ro
       - ./data/continuwuity:/var/lib/continuwuity
     networks:
       - matrix
