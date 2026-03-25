@@ -3,13 +3,14 @@ services:
     image: forgejo.ellis.link/continuwuation/continuwuity:latest
     container_name: sky0cloud-continuwuity
     restart: unless-stopped
-    ports:
-      - "6167:6167"
+    expose:
+       - "8008"
     environment:
       CONDUWUIT_REQUEST_TIMEOUT: 30000
       CONTINUWUITY_SERVER_NAME: sky0cloud.dpdns.org
       CONTINUWUITY_DATABASE_PATH: /var/lib/continuwuity
       CONTINUWUITY_ADDRESS: 0.0.0.0
+      CONTINUWUITY_PORT: 8008
       CONTINUWUITY_ALLOW_REGISTRATION: "true"
       CONTINUWUITY_NEW_USER_DISPLAYNAME_SUFFIX: ""
       CONTINUWUITY_ADMINS_LIST: '["@admin:sky0cloud.dpdns.org", "@dienic:sky0cloud.dpdns.org", "@conduit:sky0cloud.dpdns.org"]'
