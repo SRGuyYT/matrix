@@ -3,15 +3,14 @@
     auto_https off
 }
 
-# -------------------------------
-# Main domain – Element Web + Continuwuity API
-# -------------------------------
 sky0cloud.dpdns.org:80 {
+
+    encode gzip zstd
 
     # Matrix client discovery
     handle /.well-known/matrix/client {
         header Content-Type application/json
-        header Access-Control-Allow-Origin https://admin.sky0cloud.dpdns.org
+        header Access-Control-Allow-Origin *
         header Access-Control-Allow-Methods "GET, OPTIONS"
         header Access-Control-Allow-Headers "Authorization, Content-Type"
         respond `{"m.homeserver":{"base_url":"https://sky0cloud.dpdns.org"}}` 200
@@ -23,17 +22,29 @@ sky0cloud.dpdns.org:80 {
         respond `{"m.server":"sky0cloud.dpdns.org:443"}` 200
     }
 
-    # Continuwuity Matrix client API
+    # Matrix API
     handle /_matrix/* {
         reverse_proxy sky0cloud-continuwuity:8008
     }
 
-    # Continuwuity Admin API (optional if used)
+    # Admin API
     handle /_admin/* {
         reverse_proxy sky0cloud-continuwuity:8008
     }
 
-    # Element Web frontend
+    # Terms of Service page
+    handle /tos.html {
+        root * /srv
+        file_server
+    }
+
+    # Optional privacy page
+    handle /privacy.html {
+        root * /srv
+        file_server
+    }
+
+    # Everything else -> Element
     handle {
         reverse_proxy sky0cloud-element-web:80
     }
