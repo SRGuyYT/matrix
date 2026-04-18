@@ -4,7 +4,7 @@ services:
     container_name: sky0cloud-continuwuity
     restart: unless-stopped
     expose:
-       - "8008"
+      - "8008"
     environment:
       CONDUWUIT_REQUEST_TIMEOUT: 30000
       CONTINUWUITY_TRUSTED_SERVERS: '["matrix.org"]'
@@ -19,15 +19,11 @@ services:
       CONTINUWUITY_RECAPTCHA_SITE_KEY: "6LdhVIUsAAAAAExFNW2lKBmZJ8Reh6mGNtV5AxSe"
       CONTINUWUITY_RECAPTCHA_PRIVATE_SITE_KEY: "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
       CONTINUWUITY_MAX_REQUEST_SIZE: 100000000
-      CONTINUWUITY_SMTP_HOST: smtp-relay.brevo.com
-      CONTINUWUITY_SMTP_PORT: "587"
-      CONTINUWUITY_SMTP_USERNAME: "a87cce001@smtp-brevo.com"
-      CONTINUWUITY_SMTP_PASSWORD: "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"
-      CONTINUWUITY_SMTP_FROM: "noreply@sky0cloud.dpdns.org"
-      CONTINUWUITY_SMTP_TLS: "true"
     volumes:
       - /etc/resolv.conf:/etc/resolv.conf:ro
       - ./data/continuwuity:/var/lib/continuwuity
+      - ./data/continuwuity/continuwuity.toml:/etc/continuwuity.toml:ro
+    command: ["continuwuity", "--config", "/etc/continuwuity.toml"]
     networks:
       - matrix
 
