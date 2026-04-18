@@ -7,11 +7,10 @@ services:
       - "8008"
     environment:
       CONDUWUIT_REQUEST_TIMEOUT: 30000
-    command: ["continuwuity", "--config", "/etc/continuwuity.toml"]
     volumes:
       - /etc/resolv.conf:/etc/resolv.conf:ro
       - ./data/continuwuity:/var/lib/continuwuity
-      - ./data/continuwuity/continuwuity.toml:/etc/continuwuity.toml:ro
+      - ./data/continuwuity/continuwuity.toml:/var/lib/continuwuity/continuwuity.toml
     networks:
       - matrix
 
