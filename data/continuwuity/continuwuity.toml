@@ -1,55 +1,38 @@
-[global]
 server_name = "sky0cloud.dpdns.org"
 database_path = "/var/lib/continuwuity"
-address = ["0.0.0.0"]
+address = "0.0.0.0"
 port = 8008
 
-# Registration
 allow_registration = true
 new_user_displayname_suffix = ""
 
-# Admins
-admins_list = [
+admins = [
   "@admin:sky0cloud.dpdns.org",
   "@dienic:sky0cloud.dpdns.org",
   "@conduit:sky0cloud.dpdns.org"
 ]
 
-# Federation
 trusted_servers = ["matrix.org"]
 
-# Auto join rooms
 auto_join_rooms = [
   "!2MBteHG2EqAuy4GWiU:sky0cloud.dpdns.org",
   "!w22RyA5q5qtKTnn8RS:sky0cloud.dpdns.org"
 ]
 
-# Limits
 max_request_size = 100000000
 
-# Recaptcha
 recaptcha_site_key = "6LdhVIUsAAAAAExFNW2lKBmZJ8Reh6mGNtV5AxSe"
 recaptcha_private_site_key = "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
 
-# Privacy
 allow_web_indexing = false
 
-# =====================
-# EMAIL (Brevo)
-# =====================
-[global.smtp]
+[smtp]
 connection_uri = "smtps://a87cce001%40smtp-brevo.com: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@smtp-relay.brevo.com:465"
 sender = "Sky0Cloud <noreply@sky0cloud.dpdns.org>"
 
-# =====================
-# TERMS OF SERVICE
-# =====================
-[global.registration_terms.tos]
+[registration_terms.tos]
 en = { name = "Terms of Service", url = "https://sky0cloud.dpdns.org/tos.html" }
 
-# =====================
-# SUPPORT INFO
-# =====================
-[global.well_known]
+[well_known]
 support_email = "chapmlinks@gmail.com"
 support_role = "m.role.admin"
