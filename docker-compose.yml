@@ -7,23 +7,11 @@ services:
       - "8008"
     environment:
       CONDUWUIT_REQUEST_TIMEOUT: 30000
-      CONTINUWUITY_TRUSTED_SERVERS: '["matrix.org"]'
-      CONTINUWUITY_SERVER_NAME: sky0cloud.dpdns.org
-      CONTINUWUITY_DATABASE_PATH: /var/lib/continuwuity
-      CONTINUWUITY_ADDRESS: 0.0.0.0
-      CONTINUWUITY_PORT: 8008
-      CONTINUWUITY_ALLOW_REGISTRATION: "true"
-      CONTINUWUITY_NEW_USER_DISPLAYNAME_SUFFIX: ""
-      CONTINUWUITY_ADMINS_LIST: '["@admin:sky0cloud.dpdns.org", "@dienic:sky0cloud.dpdns.org", "@conduit:sky0cloud.dpdns.org"]'
-      CONDUIT_AUTO_JOIN_ROOMS: '["!2MBteHG2EqAuy4GWiU:sky0cloud.dpdns.org", "!w22RyA5q5qtKTnn8RS:sky0cloud.dpdns.org"]'
-      CONTINUWUITY_RECAPTCHA_SITE_KEY: "6LdhVIUsAAAAAExFNW2lKBmZJ8Reh6mGNtV5AxSe"
-      CONTINUWUITY_RECAPTCHA_PRIVATE_SITE_KEY: "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
-      CONTINUWUITY_MAX_REQUEST_SIZE: 100000000
+    command: ["continuwuity", "--config", "/etc/continuwuity.toml"]
     volumes:
       - /etc/resolv.conf:/etc/resolv.conf:ro
       - ./data/continuwuity:/var/lib/continuwuity
       - ./data/continuwuity/continuwuity.toml:/etc/continuwuity.toml:ro
-    command: ["continuwuity", "--config", "/etc/continuwuity.toml"]
     networks:
       - matrix
 
@@ -44,9 +32,9 @@ services:
     container_name: sky0cloud-turn
     restart: unless-stopped
     network_mode: host
+    command: ["turnserver", "-c", "/etc/turnserver.conf"]
     volumes:
       - ./data/coturn/turnserver.conf:/etc/turnserver.conf:ro
-    command: ["turnserver", "-c", "/etc/turnserver.conf"]
 
   caddy:
     image: caddy:2-alpine
@@ -54,17 +42,18 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./data/caddy:/data
       - ./data/caddy_config:/config
+      - ./data/element/tos.html:/srv/tos.html:ro
+      - ./data/element/privacy.html:/srv/privacy.html:ro
     depends_on:
       - continuwuity
       - element-web
     networks:
       - matrix
-      
+
 networks:
   matrix:
     name: matrix_matrix_network
