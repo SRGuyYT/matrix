@@ -7,12 +7,6 @@ port = 8008
 allow_registration = true
 new_user_displayname_suffix = ""
 
-admins = [
-  "@admin:sky0cloud.dpdns.org",
-  "@dienic:sky0cloud.dpdns.org",
-  "@conduit:sky0cloud.dpdns.org"
-]
-
 trusted_servers = ["matrix.org"]
 
 auto_join_rooms = [
