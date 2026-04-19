@@ -10,7 +10,7 @@ services:
     volumes:
       - /etc/resolv.conf:/etc/resolv.conf:ro
       - ./data/continuwuity:/var/lib/continuwuity
-      - ./data/continuwuity/continuwuity.toml:/var/lib/continuwuity/continuwuity.toml
+      - ./data/continuwuity/conduwuit.toml:/var/lib/continuwuity/conduwuit.toml
     networks:
       - matrix
 
