@@ -1,3 +1,4 @@
+[global]
 server_name = "sky0cloud.dpdns.org"
 database_path = "/var/lib/continuwuity"
 address = "0.0.0.0"
@@ -21,18 +22,18 @@ auto_join_rooms = [
 
 max_request_size = 100000000
 
-recaptcha_site_key = "6LdhVIUsAAAAAExFNW2lKBmZJ8Reh6mGNtV5AxSe"
-recaptcha_private_site_key = "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
+recaptcha_site_key = "REPLACE_ME"
+recaptcha_private_site_key = "REPLACE_ME"
 
 allow_web_indexing = false
 
-[smtp]
-connection_uri = "smtps://a87cce001%40smtp-brevo.com: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@smtp-relay.brevo.com:465"
+[global.smtp]
+connection_uri = "smtps://..."
 sender = "Sky0Cloud <noreply@sky0cloud.dpdns.org>"
 
-[registration_terms.tos]
+[global.registration_terms.tos]
 en = { name = "Terms of Service", url = "https://sky0cloud.dpdns.org/tos.html" }
 
-[well_known]
-support_email = "chapmlinks@gmail.com"
+[global.well_known]
+support_email = "support@sky0cloud.dpdns.org"
 support_role = "m.role.admin"
