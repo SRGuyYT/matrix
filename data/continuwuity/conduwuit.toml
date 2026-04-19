@@ -28,7 +28,7 @@ recaptcha_private_site_key = "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
 allow_web_indexing = true
 
 [global.smtp]
-connection_uri = "smtp://a87cce001@smtp-brevo.com:xsmtpsib-e557d3968fe26a48b6a921e2ad3d5babd3471d8de9551894214370564d9910a9-V9TzyT0jDRjSS9F4@smtp-relay.brevo.com:587"
+connection_uri = "smtp://a87cce001%40smtp-brevo.com:xsmtpsib-e557d3968fe26a48b6a921e2ad3d5babd3471d8de9551894214370564d9910a9-V9TzyT0jDRjSS9F4@smtp-relay.brevo.com:587"
 sender = "Sky0Cloud <noreply@sky0cloud.dpdns.org>"
 
 [global.registration_terms.tos]
