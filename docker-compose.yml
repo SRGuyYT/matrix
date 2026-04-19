@@ -1,16 +1,14 @@
 services:
   continuwuity:
     image: forgejo.ellis.link/continuwuation/continuwuity:latest
-    container_name: sky0cloud-continuwuity
+    command: /sbin/conduwuit
     restart: unless-stopped
-    expose:
-      - "8008"
-    environment:
-      CONDUWUIT_REQUEST_TIMEOUT: 30000
     volumes:
-      - /etc/resolv.conf:/etc/resolv.conf:ro
       - ./data/continuwuity:/var/lib/continuwuity
-      - ./data/continuwuity/conduwuit.toml:/var/lib/continuwuity/conduwuit.toml
+      - /etc/resolv.conf:/etc/resolv.conf:ro
+      - ./data/continuwuity/conduwuit.toml:/etc/continuwuity.toml:ro
+    environment:
+      CONTINUWUITY_CONFIG: /etc/continuwuity.toml
     networks:
       - matrix
 
