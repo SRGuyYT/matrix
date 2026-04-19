@@ -27,7 +27,7 @@ recaptcha_private_site_key = "REPLACE_ME"
 
 allow_web_indexing = false
 
-[smtp]
+[global.smtp]
 connection_uri = "smtps://a87cce001%40smtp-brevo.com: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@smtp-relay.brevo.com:465"
 sender = "Sky0Cloud <noreply@sky0cloud.dpdns.org>"
 
