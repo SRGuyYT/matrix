@@ -10,8 +10,8 @@ new_user_displayname_suffix = ""
 trusted_servers = ["matrix.org"]
 
 auto_join_rooms = [
-  "!2MBteHG2EqAuy4GWiU:sky0cloud.dpdns.org",
-  "!w22RyA5q5qtKTnn8RS:sky0cloud.dpdns.org"
+  "!kKzwAfKGRsTNWWVVekVsddt8g62F8xZEMbEIQMSp4pA:sky0cloud.dpdns.org",
+  "!oCRFzV6FNhGpS3gXSt1jpYDcddgMJksXQg3OVILUTIo:sky0cloud.dpdns.org"
 ]
 
 max_request_size = 100000000
