@@ -22,10 +22,10 @@ auto_join_rooms = [
 
 max_request_size = 100000000
 
-recaptcha_site_key = "REPLACE_ME"
-recaptcha_private_site_key = "REPLACE_ME"
+recaptcha_site_key = "6LdhVIUsAAAAAExFNW2lKBmZJ8Reh6mGNtV5AxSe"
+recaptcha_private_site_key = "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
 
-allow_web_indexing = false
+allow_web_indexing = true
 
 [global.smtp]
 connection_uri = "smtps://a87cce001%40smtp-brevo.com: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@smtp-relay.brevo.com:465"
