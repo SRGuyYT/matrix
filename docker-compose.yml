@@ -9,7 +9,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/continuwuity:/var/lib/continuwuity
-      - /etc/resolv.conf:/etc/resolv.conf:ro
       - ./data/continuwuity/conduwuit.toml:/etc/continuwuity.toml:ro
       - ./data/continuwuity/appservices:/var/lib/continuwuity/appservices
     environment:
