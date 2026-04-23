@@ -3,6 +3,8 @@ server_name = "sky0cloud.dpdns.org"
 database_path = "/var/lib/continuwuity"
 address = "0.0.0.0"
 port = 8008
+ip_lookup_strategy = 1
+query_over_tcp_only = true
 
 allow_registration = true
 new_user_displayname_suffix = ""
@@ -21,9 +23,9 @@ recaptcha_private_site_key = "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
 
 allow_web_indexing = true
 
-[global.smtp]
-connection_uri = "smtp://a87cce001@smtp-brevo.com:bsk1oIg59qR9qYM@smtp-relay.brevo.com:587"
-sender = "Sky0Cloud <noreply@sky0cloud.dpdns.org>"
+#[global.smtp]
+#connection_uri = "smtp://a87cce001@smtp-brevo.com:bsk1oIg59qR9qYM@smtp-relay.brevo.com:587"
+#sender = "Sky0Cloud <noreply@sky0cloud.dpdns.org>"
 
 [global.registration_terms.tos]
 en = { name = "Terms of Service", url = "https://sky0cloud.dpdns.org/tos.html" }

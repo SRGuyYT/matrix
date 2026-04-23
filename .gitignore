@@ -1,0 +1,22 @@
+# Runtime databases / generated data
+data/continuwuity/*.sst
+data/continuwuity/*.log
+data/continuwuity/archive/
+data/continuwuity/CURRENT
+data/continuwuity/IDENTITY
+data/continuwuity/LOCK
+data/continuwuity/MANIFEST-*
+data/continuwuity/OPTIONS-*
+
+data/redis/
+data/caddy/
+data/caddy_config/
+
+# Keep important configs in data
+!data/continuwuity/
+!data/continuwuity/continuwuity.toml
+!data/continuwuity/appservices/
+!data/continuwuity/appservices/hookshot-registration.yml
+!data/element/
+!data/element/**
+hookshot/passkey.pem

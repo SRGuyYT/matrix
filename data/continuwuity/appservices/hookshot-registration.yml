@@ -1,0 +1,18 @@
+id: matrix-hookshot
+as_token: dc7282cfcafe8d58653aa2ecaa60e91fa80451d3ecc76445b4a279801769ef5d
+hs_token: 85f2b1a33a3a1c77f3620cbd9b2a8e16a5fc3d819997333c0eab85279dcbe574
+
+namespaces:
+  rooms: []
+  users:
+    - regex: "@_webhooks_.*:sky0cloud.dpdns.org"
+      exclusive: true
+  aliases: []
+
+sender_localpart: hookshot
+url: "http://localhost:9993"
+rate_limited: false
+
+de.sorunome.msc2409.push_ephemeral: true
+push_ephemeral: true
+org.matrix.msc3202: true

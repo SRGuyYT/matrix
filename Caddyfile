@@ -27,6 +27,10 @@ sky0cloud.dpdns.org:80 {
         reverse_proxy continuwuity:8008
     }
 
+    handle_path /hooks/* {
+        reverse_proxy hookshot:9000
+    }
+
     handle /tos.html {
         root * /srv
         file_server

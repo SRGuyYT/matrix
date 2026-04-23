@@ -1,14 +1,45 @@
 services:
   continuwuity:
     image: forgejo.ellis.link/continuwuation/continuwuity:latest
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    container_name: sky0cloud-continuwuity
     command: /sbin/conduwuit
     restart: unless-stopped
     volumes:
       - ./data/continuwuity:/var/lib/continuwuity
       - /etc/resolv.conf:/etc/resolv.conf:ro
       - ./data/continuwuity/conduwuit.toml:/etc/continuwuity.toml:ro
+      - ./data/continuwuity/appservices:/var/lib/continuwuity/appservices
     environment:
       CONTINUWUITY_CONFIG: /etc/continuwuity.toml
+    networks:
+      - matrix
+
+  redis:
+    image: redis:7-alpine
+    container_name: sky0cloud-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - matrix
+
+  hookshot:
+    image: halfshot/matrix-hookshot:latest
+    container_name: sky0cloud-hookshot
+    restart: unless-stopped
+    volumes:
+      - ./data/hookshot:/data
+    ports:
+      - "9993:9993"
+      - "9001:9000"
+    depends_on:
+      - continuwuity
     networks:
       - matrix
 
@@ -39,15 +70,13 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./data/caddy:/data
       - ./data/caddy_config:/config
       - ./data/element/tos.html:/srv/tos.html:ro
       - ./data/element/privacy.html:/srv/privacy.html:ro
-    depends_on:
-      - continuwuity
-      - element-web
     networks:
       - matrix
 
