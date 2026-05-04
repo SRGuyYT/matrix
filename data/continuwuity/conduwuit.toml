@@ -12,8 +12,8 @@ new_user_displayname_suffix = ""
 trusted_servers = ["matrix.org"]
 
 auto_join_rooms = [
-  "!kKzwAfKGRsTNWWVVekVsddt8g62F8xZEMbEIQMSp4pA:sky0cloud.dpdns.org",
-  "!oCRFzV6FNhGpS3gXSt1jpYDcddgMJksXQg3OVILUTIo:sky0cloud.dpdns.org"
+  "!oCRFzV6FNhGpS3gXSt1jpYDcddgMJksXQg3OVILUTIo:sky0cloud.dpdns.org",
+  "!kKzwAfKGRsTNWWVVekVsddt8g62F8xZEMbEIQMSp4pA:sky0cloud.dpdns.org"
 ]
 
 max_request_size = 100000000
@@ -23,9 +23,9 @@ recaptcha_private_site_key = "6LdhVIUsAAAAAPv3_PKe5YH9mZZQozeuKnOgasKb"
 
 allow_web_indexing = true
 
-#[global.smtp]
-#connection_uri = "smtp://a87cce001@smtp-brevo.com:bsk1oIg59qR9qYM@smtp-relay.brevo.com:587"
-#sender = "Sky0Cloud <noreply@sky0cloud.dpdns.org>"
+[global.smtp]
+connection_uri = "smtp://a87cce001@smtp-brevo.com:bsk1oIg59qR9qYM@smtp-relay.brevo.com:587"
+sender = "Sky0Cloud <noreply@sky0cloud.dpdns.org>"
 
 [global.registration_terms.tos]
 en = { name = "Terms of Service", url = "https://sky0cloud.dpdns.org/tos.html" }
